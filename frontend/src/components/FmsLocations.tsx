@@ -20,14 +20,12 @@ const FmsLocations = () => {
             <hr className="border-gray-300 mb-4" />
             <div className="flex items-center">
                 { }
-                <button
-                    onClick={scrollLeft}
-                    className="absolute left-[5%] z-10 bg-gray-700 text-white p-2 rounded-xl shadow-lg hover:bg-gray-600">
+                <button onClick={scrollLeft} className="absolute left-[5%] z-10 bg-gray-700 text-white p-2 rounded-xl shadow-lg hover:bg-gray-600">
                     <i className="bi bi-arrow-left-circle"></i>
                 </button>
 
                 { }
-                <div ref={scrollContainerRef} className="flex overflow-x-auto space-x-4 scroll-smooth px-4 container mx-auto">
+                <div ref={scrollContainerRef} className="flex overflow-x-scroll space-x-4 scroll-smooth px-4 container mx-auto scrollbar-hide-horizontal">
                     <Card title="Sigiriya" img="/src/assets/img/card-Sigiriya.jpg" description="Ancient rock fortress with stunning views." link="/attractions/sigiriya" />
                     <Card title="Ella" img="/src/assets/img/card-Ella.jpg" description="Scenic highlands with lush greenery." link="/attractions/ella" />
                     <Card title="Kandy" img="/src/assets/img/card-Kandy.jpg" description="Cultural capital with famous temple." link="/attractions/kandy" />
@@ -43,9 +41,7 @@ const FmsLocations = () => {
                 </div>
 
                 { }
-                <button
-                    onClick={scrollRight}
-                    className="absolute right-[5%] z-10 bg-gray-700 text-white p-2 rounded-xl shadow-lg hover:bg-gray-600">
+                <button onClick={scrollRight} className="absolute right-[5%] z-10 bg-gray-700 text-white p-2 rounded-xl shadow-lg hover:bg-gray-600">
                     <i className="bi bi-arrow-right-circle"></i>
                 </button>
             </div>

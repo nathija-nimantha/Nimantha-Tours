@@ -12,9 +12,9 @@ const Card = (props) => {
                 <div className='p-4'>
                     <h2 className='text-xl font-bold mb-2 text-gray-800'>{props.title}</h2>
                     <p className='text-gray-600 mb-4'>{props.description}</p>
-                    <button className='text-amber-600 font-semibold hover:text-amber-700'>
+                    <a href={props.link} className='text-amber-600 font-semibold hover:text-amber-700'>
                         Read More
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
