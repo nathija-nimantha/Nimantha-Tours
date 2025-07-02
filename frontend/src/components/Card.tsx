@@ -1,21 +1,29 @@
-import React from 'react';
+import React from "react";
 
-const Card = (props) => {
+type CardProps = {
+    title: string;
+    imgSrc: string;
+    description: string;
+    link: string;
+};
+
+const Card = ({ title, imgSrc, description, link }: CardProps) => {
     return (
-        <div className='w-full md:w-1/3 lg:w-1/4 p-4 min-w-[250px]'>
-            <div className='bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105'>
-                <img
-                    src={props.img}
-                    alt={props.title}
-                    className='w-full h-48 object-cover'
-                />
-                <div className='p-4'>
-                    <h2 className='text-xl font-bold mb-2 text-gray-800'>{props.title}</h2>
-                    <p className='text-gray-600 mb-4'>{props.description}</p>
-                    <a href={props.link} className='text-amber-600 font-semibold hover:text-amber-700'>
-                        Read More
-                    </a>
-                </div>
+        <div className="snap-start flex-none w-80 bg-white rounded-lg shadow-lg overflow-hidden">
+            <img
+                src={imgSrc}
+                alt={title}
+                className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+                <h3 className="text-xl font-semibold">{title}</h3>
+                <p className="text-gray-600 mb-4">{description}</p>
+                <a
+                    href={link}
+                    className="text-teal-500 hover:underline flex items-center"
+                >
+                    Learn More <i className="bi bi-arrow-right ml-2"></i>
+                </a>
             </div>
         </div>
     );
