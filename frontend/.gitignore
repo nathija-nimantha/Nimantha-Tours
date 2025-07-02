@@ -7,18 +7,55 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependency directories
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
 *.local
 
-# Editor directories and files
+# Vite cache
+.vite/
+.vitest/
+
+# Coverage directory
+coverage/
+
+# Editor settings
 .vscode/*
 !.vscode/extensions.json
-.idea
+
+.idea/
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# macOS system files
+*.swp
+*.swo
+
+# VS Code settings
+*.code-workspace
+
+# JetBrains
+*.iml
+*.iws
+*.ipr
+out/
+
+# Next.js specific (just in case you experiment with it)
+.next/
+
+# Optional OS-specific junk
+Thumbs.db
+ehthumbs.db
