@@ -1,0 +1,223 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tour {
+  id          Int        @id @default(autoincrement())
+  title       String
+  slug        String     @unique
+  description String
+  shortDesc   String?
+  price       Float
+  duration    Int // in days
+  maxPeople   Int
+  difficulty  Difficulty @default(EASY)
+  category    String
+  featured    Boolean    @default(false)
+  images      String[] // Array of image URLs
+  location    String
+  coordinates Json? // {lat, lng}
+  startDates  DateTime[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations - removed bookings relation
+  itinerary  Itinerary[]
+  reviews    Review[]
+  inclusions Inclusion[]
+  exclusions Exclusion[]
+  Booking    Booking[]
+
+  @@map("tours")
+}
+
+model Itinerary {
+  id            Int      @id @default(autoincrement())
+  tourId        Int
+  day           Int
+  title         String
+  description   String
+  activities    String[]
+  meals         String[] // breakfast, lunch, dinner
+  accommodation String?
+
+  // Relations
+  tour Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@map("itineraries")
+}
+
+model Inclusion {
+  id     Int    @id @default(autoincrement())
+  tourId Int
+  item   String
+
+  // Relations
+  tour Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@map("inclusions")
+}
+
+model Exclusion {
+  id     Int    @id @default(autoincrement())
+  tourId Int
+  item   String
+
+  // Relations
+  tour Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@map("exclusions")
+}
+
+model Booking {
+  id        Int    @id @default(autoincrement())
+  bookingId String @unique // Custom booking ID like BK0001 - automatically generated
+
+  // Customer details (no user relation needed)
+  title       String // Mr, Mrs, Ms, Dr, etc.
+  name        String // Customer full name
+  nationality String // Customer nationality
+  email       String // Customer email
+  phone       String // Customer phone
+
+  startDate DateTime // Tour start date
+  nights    Int // Number of nights
+  adults    Int // Number of adults
+  children  Int // Number of children
+
+  accommodation String // Accommodation preference
+  specialNote   String? // Special requests/notes
+  hearAboutUs   String? // How they heard about us
+  otherDetails  String? // Any other details
+
+  // System fields
+  totalPrice Float         @default(0) // Default to 0 since no tour pricing
+  status     BookingStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  // Relations
+  payment Payment?
+  Tour    Tour?    @relation(fields: [tourId], references: [id])
+  tourId  Int?
+
+  @@map("bookings")
+}
+
+model Payment {
+  id        Int           @id @default(autoincrement())
+  bookingId Int           @unique
+  amount    Float
+  status    PaymentStatus @default(PENDING)
+  method    String? // card, bank_transfer, etc.
+  reference String? // transaction reference
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  // Relations
+  booking Booking @relation(fields: [bookingId], references: [id])
+
+  @@map("payments")
+}
+
+model Review {
+  id     Int @id @default(autoincrement())
+  tourId Int
+
+  // Guest reviewer details (no user relation)
+  name      String // Reviewer name
+  email     String // Reviewer email
+  rating    Int // 1-5 stars
+  title     String?
+  comment   String
+  images    String[] // Array of image URLs
+  verified  Boolean  @default(false) // verified if reviewer actually booked the tour
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tour Tour @relation(fields: [tourId], references: [id])
+
+  @@map("reviews")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  image       String?
+  createdAt   DateTime @default(now())
+
+  @@map("categories")
+}
+
+model Destination {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  image       String?
+  country     String
+  coordinates Json? // {lat, lng}
+  popular     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("destinations")
+}
+
+model ContactInquiry {
+  id        Int           @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+
+  @@map("contact_inquiries")
+}
+
+model Newsletter {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  subscribed Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@map("newsletter_subscribers")
+}
+
+// Enums
+enum Difficulty {
+  EASY
+  MODERATE
+  CHALLENGING
+  EXTREME
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum InquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
