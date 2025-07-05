@@ -54,7 +54,7 @@ export const Booking: React.FC = () => {
                         step: "01",
                         title: "Fill the Form",
                         description: "Complete our detailed booking form with your travel preferences and requirements.",
-                        icon: "bi-form",
+                        icon: "bi-pencil-square",
                         color: "from-blue-500 to-purple-600",
                       },
                       {
