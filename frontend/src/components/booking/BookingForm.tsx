@@ -1,8 +1,43 @@
 "use client"
 import React from "react"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Fade } from "react-awesome-reveal"
-import { ChevronDown, Check } from "lucide-react"
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  User,
+  Mail,
+  Phone,
+  Globe,
+  Calendar,
+  Moon,
+  Users,
+  Baby,
+  Building,
+  MessageSquare,
+  Sparkles,
+  Search,
+  Users2,
+  Camera,
+  MessageCircle,
+  Plane,
+  FileText,
+  HelpCircle,
+  Crown,
+  Home,
+  Gem,
+  Leaf,
+  Wallet,
+  Shield,
+  Award,
+  Twitter,
+  X,
+  Instagram,
+  Facebook,
+} from "lucide-react"
+import { BiLogoTripAdvisor } from "react-icons/bi"
+import { BsGoogle } from "react-icons/bs"
 
 interface FormData {
   title: string
@@ -34,90 +69,7 @@ interface SelectOption {
   value: string
   label: string
   icon: React.ReactNode
-}
-
-const CustomSelect: React.FC<{
-  options: SelectOption[]
-  value: string
-  onChange: (value: string) => void
-  placeholder: string
-  error?: string
-  required?: boolean
-}> = ({ options, value, onChange, placeholder, error, required }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    const selected = options.find((option) => option.value === value)
-    setSelectedOption(selected || null)
-  }, [value, options])
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
-      }
-    }
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [isOpen])
-
-  const handleSelect = (option: SelectOption) => {
-    onChange(option.value)
-    setIsOpen(false)
-  }
-
-  return (
-      <div className={`relative ${isOpen ? "z-40" : ""}`} ref={dropdownRef}>
-        <button
-            ref={buttonRef}
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm text-left flex items-center justify-between ${
-                error ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50" : ""
-            }`}
-        >
-          <div className="flex items-center space-x-3">
-            {selectedOption ? (
-                <>
-                  <span className="text-blue-500 flex-shrink-0">{selectedOption.icon}</span>
-                  <span>{selectedOption.label}</span>
-                </>
-            ) : (
-                <span className="text-slate-400">{placeholder}</span>
-            )}
-          </div>
-          <ChevronDown
-              className={`w-5 h-5 text-slate-400 transition-transform duration-200 flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
-          />
-        </button>
-
-        {isOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-slate-200 rounded-lg md:rounded-xl shadow-xl z-40 max-h-48 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
-              {options.map((option) => (
-                  <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => handleSelect(option)}
-                      className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors duration-200 flex items-center space-x-3 border-b border-slate-100 last:border-b-0"
-                  >
-                    <span className="text-blue-500 flex-shrink-0">{option.icon}</span>
-                    <span className="font-medium text-slate-800 flex-1">{option.label}</span>
-                    {value === option.value && <Check className="w-4 h-4 text-blue-500 flex-shrink-0" />}
-                  </button>
-              ))}
-            </div>
-        )}
-      </div>
-  )
+  description: string
 }
 
 const BookingForm: React.FC = () => {
@@ -282,15 +234,13 @@ const BookingForm: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
   }
 
-  const handleCustomSelectChange = (name: string, value: string): void => {
+  const handleCardSelect = (name: string, value: string): void => {
     setFormData((prev) => ({ ...prev, [name]: value }))
-    // Clear error when user selects
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
@@ -307,8 +257,6 @@ const BookingForm: React.FC = () => {
     setIsSubmitting(true)
     setErrors({})
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
       const payload = {
         tourId: 1,
         title: formData.title,
@@ -325,9 +273,21 @@ const BookingForm: React.FC = () => {
         hearAboutUs: formData.hearAboutUs,
         otherDetails: formData.otherDetails,
       }
-      console.log("Booking submitted:", payload)
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to submit booking")
+      }
+
       showToast("success", "🎉 Booking submitted successfully! We will contact you within 24 hours.")
-      // Reset form after success
+
       setTimeout(() => {
         setFormData({
           title: "",
@@ -367,16 +327,16 @@ const BookingForm: React.FC = () => {
     }
   }
 
-  const getStepIcon = (): string => {
+  const getStepDescription = (): string => {
     switch (step) {
       case 1:
-        return "👤"
+        return "Tell us about yourself"
       case 2:
-        return "📅"
+        return "Plan your perfect trip"
       case 3:
-        return "💬"
+        return "Final touches"
       default:
-        return "📝"
+        return "Complete your booking"
     }
   }
 
@@ -398,615 +358,650 @@ const BookingForm: React.FC = () => {
   // Get today's date in YYYY-MM-DD format for min date
   const today = new Date().toISOString().split("T")[0]
 
-  // Options for "How did you hear about us?" dropdown
+  // Options for "How did you hear about us?" cards
   const hearAboutUsOptions: SelectOption[] = [
     {
       value: "google",
       label: "Google Search",
-      icon: <span className="text-base">🔍</span>,
+      icon: <BsGoogle className="w-6 h-6" />,
+      description: "Found us through search",
     },
     {
       value: "facebook",
       label: "Facebook",
-      icon: <span className="text-base">📘</span>,
+      icon: <Facebook className="w-6 h-6" />,
+      description: "Social media discovery",
     },
     {
       value: "instagram",
       label: "Instagram",
-      icon: <span className="text-base">📷</span>,
+      icon: <Instagram className="w-6 h-6" />,
+      description: "Visual inspiration",
     },
     {
       value: "twitter",
       label: "Twitter",
-      icon: <span className="text-base">🐦</span>,
+      icon: <Twitter className="w-6 h-6" />,
+      description: "Social media platform",
     },
     {
       value: "trip-advisor",
       label: "TripAdvisor",
-      icon: <span className="text-base">✈️</span>,
+      icon: <BiLogoTripAdvisor className="w-6 h-6" />,
+      description: "Travel review site",
     },
     {
       value: "friend-family",
-      label: "Friend or Family Recommendation",
-      icon: <span className="text-base">👥</span>,
+      label: "Friend/Family",
+      icon: <Users className="w-6 h-6" />,
+      description: "Personal recommendation",
     },
     {
       value: "travel-blog",
       label: "Travel Blog",
-      icon: <span className="text-base">📝</span>,
+      icon: <FileText className="w-6 h-6" />,
+      description: "Online article or blog",
     },
     {
       value: "other",
       label: "Other",
-      icon: <span className="text-base">❓</span>,
+      icon: <HelpCircle className="w-6 h-6" />,
+      description: "Something else",
+    },
+  ]
+
+  const accommodationOptions = [
+    {
+      value: "5-star hotel",
+      label: "5 Star Luxury",
+      icon: <Crown className="w-6 h-6" />,
+      description: "Premium luxury experience",
+    },
+    {
+      value: "4-star hotel",
+      label: "4 Star Hotel",
+      icon: <Building className="w-6 h-6" />,
+      description: "Comfortable and elegant",
+    },
+    {
+      value: "3-star hotel",
+      label: "3 Star Hotel",
+      icon: <Home className="w-6 h-6" />,
+      description: "Quality and value",
+    },
+    {
+      value: "luxury boutique",
+      label: "Boutique Hotel",
+      icon: <Gem className="w-6 h-6" />,
+      description: "Unique and intimate",
+    },
+    {
+      value: "eco-lodge",
+      label: "Eco Lodge",
+      icon: <Leaf className="w-6 h-6" />,
+      description: "Sustainable and natural",
+    },
+    {
+      value: "wallet-friendly",
+      label: "Budget Friendly",
+      icon: <Wallet className="w-6 h-6" />,
+      description: "Great value option",
     },
   ]
 
   return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute w-72 h-72 md:w-80 md:h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 -top-36 -right-36 md:-top-40 md:-right-40 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
-        <div className="absolute w-72 h-72 md:w-80 md:h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 -bottom-36 -left-36 md:-bottom-40 md:-left-40 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
-        <div className="absolute w-80 h-80 md:w-96 md:h-96 bg-gradient-to-br from-teal-400/10 to-cyan-400/10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
-
-        {/* Toast Notification */}
+    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-white">
+      {/* Toast Notification */}
+      <div
+        className={`fixed top-6 right-6 z-50 transform transition-all duration-500 ease-out ${
+          toast.show ? "translate-x-0 opacity-100 scale-100" : "translate-x-full opacity-0 scale-95"
+        }`}
+      >
         <div
-            className={`fixed top-4 right-4 z-50 transform transition-all duration-500 ease-out ${
-                toast.show ? "translate-x-0 opacity-100 scale-100" : "translate-x-full opacity-0 scale-95"
-            }`}
+          className={`text-white px-6 py-4 rounded-2xl shadow-2xl max-w-sm backdrop-blur-sm border border-white/20 ${
+            toast.type === "success"
+              ? "bg-gradient-to-r from-emerald-500 to-teal-600"
+              : toast.type === "error"
+                ? "bg-gradient-to-r from-red-500 to-rose-600"
+                : toast.type === "warning"
+                  ? "bg-gradient-to-r from-amber-500 to-orange-600"
+                  : "bg-gradient-to-r from-blue-500 to-indigo-600"
+          }`}
         >
-          <div
-              className={`text-white px-4 py-3 md:px-6 md:py-4 rounded-2xl shadow-2xl max-w-xs md:max-w-md backdrop-blur-sm border border-white/20 ${
-                  toast.type === "success"
-                      ? "bg-gradient-to-r from-emerald-500 to-teal-600"
-                      : toast.type === "error"
-                          ? "bg-gradient-to-r from-red-500 to-rose-600"
-                          : toast.type === "warning"
-                              ? "bg-gradient-to-r from-amber-500 to-orange-600"
-                              : "bg-gradient-to-r from-blue-500 to-indigo-600"
-              }`}
-          >
-            <div className="flex items-center space-x-3">
-              <div className="text-lg">{getToastIcon(toast.type)}</div>
-              <div className="font-semibold text-xs md:text-sm leading-relaxed flex-1">{toast.message}</div>
-              <button
-                  onClick={() => setToast((prev) => ({ ...prev, show: false }))}
-                  className="ml-2 w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors duration-200"
-              >
-                ✕
-              </button>
-            </div>
+          <div className="flex items-center space-x-3">
+            <div className="text-xl">{getToastIcon(toast.type)}</div>
+            <div className="font-semibold text-sm leading-relaxed flex-1">{toast.message}</div>
+            <button
+              onClick={() => setToast((prev) => ({ ...prev, show: false }))}
+              className="ml-2 w-6 h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors duration-200 text-sm"
+            >
+              ✕
+            </button>
           </div>
         </div>
+      </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-6 md:py-8">
-          <Fade triggerOnce>
-            <div className="bg-white/90 backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-2xl border border-white/20 p-4 md:p-8 lg:p-12 relative z-10">
-              {/* Header Section */}
-              <div className="text-center mb-8 md:mb-12">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <Fade triggerOnce>
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-12 text-white relative overflow-hidden">
+              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="relative z-10">
                 <Fade delay={100} triggerOnce>
-                  <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl md:rounded-3xl mb-4 md:mb-6 shadow-lg text-2xl md:text-3xl">
-                    {getStepIcon()}
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                      <Sparkles className="w-8 h-8" />
+                    </div>
+                    <div>
+                      <h1 className="text-4xl font-bold">Book Your Journey</h1>
+                      <p className="text-blue-100 text-lg">Create unforgettable memories</p>
+                    </div>
                   </div>
                 </Fade>
-                <Fade delay={200} triggerOnce>
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-800 bg-clip-text text-transparent mb-2 md:mb-4">
-                    Book Your Dream Journey
-                  </h1>
-                </Fade>
-                <Fade delay={300} triggerOnce>
-                  <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                    Step {step} of 3 - {getStepTitle()}
-                  </p>
-                </Fade>
-              </div>
 
-              {/* Progress Section */}
-              <Fade delay={400} triggerOnce>
-                <div className="relative mb-8 md:mb-12">
-                  {/* Step Indicators */}
-                  <div className="flex justify-center items-center space-x-4 md:space-x-8 mb-6 md:mb-8">
-                    {[1, 2, 3].map((stepNum, index) => (
-                        <Fade key={stepNum} delay={500 + index * 100} triggerOnce>
-                          <div className="flex flex-col items-center">
-                            <div
-                                className={`w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-base md:text-lg font-bold transition-all duration-500 ease-out shadow-lg ${
-                                    stepNum === step
-                                        ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white scale-110 shadow-blue-500/30"
-                                        : stepNum < step
-                                            ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/30"
-                                            : "bg-slate-200 text-slate-500"
-                                }`}
-                            >
-                              {stepNum < step ? "✓" : stepNum}
-                            </div>
-                            <span className="text-xs md:text-sm font-semibold text-slate-600 mt-2 md:mt-3 text-center">
-                          {stepNum === 1 ? "Personal" : stepNum === 2 ? "Travel" : "Additional"}
-                        </span>
-                          </div>
-                        </Fade>
-                    ))}
+                {/* Progress */}
+                <Fade delay={200} triggerOnce>
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="text-2xl font-semibold">{getStepTitle()}</h2>
+                      <p className="text-blue-100">{getStepDescription()}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-bold">{step}/3</div>
+                      <div className="text-blue-100 text-sm">Steps</div>
+                    </div>
                   </div>
-                  {/* Progress Bar */}
-                  <div className="bg-slate-200 rounded-full h-2 md:h-3 overflow-hidden shadow-inner">
+                </Fade>
+
+                {/* Progress Bar */}
+                <Fade delay={300} triggerOnce>
+                  <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
                     <div
-                        className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 h-2 md:h-3 rounded-full transition-all duration-1000 ease-out shadow-sm"
-                        style={{ width: `${(step / 3) * 100}%` }}
+                      className="bg-white h-3 rounded-full transition-all duration-1000 ease-out"
+                      style={{ width: `${(step / 3) * 100}%` }}
                     ></div>
                   </div>
-                </div>
-              </Fade>
+                </Fade>
+              </div>
+            </div>
 
-              <form className="space-y-6 md:space-y-10" onSubmit={handleSubmit}>
+            {/* Form Content */}
+            <div className="p-8">
+              <form className="space-y-8" onSubmit={handleSubmit}>
                 {step === 1 && (
-                    <div className="space-y-6 md:space-y-8">
-                      <Fade delay={100} triggerOnce>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                          <div className="space-y-2 md:space-y-3">
-                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                              <span className="mr-2 text-blue-500 text-base md:text-lg">👤</span>
-                              Title *
-                            </label>
-                            <select
-                                name="title"
-                                value={formData.title}
-                                onChange={handleChange}
-                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 transition-all duration-300 ease-out cursor-pointer focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                    errors.title ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50" : ""
-                                }`}
-                                required
-                            >
-                              <option value="" disabled>
-                                Select Your Title
-                              </option>
-                              <option value="Mr">Mr</option>
-                              <option value="Mrs">Mrs</option>
-                              <option value="Ms">Ms</option>
-                              <option value="Miss">Miss</option>
-                              <option value="Dr">Dr</option>
-                              <option value="Prof">Prof</option>
-                            </select>
-                            {errors.title && (
-                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                  <span className="mr-2 text-red-500">⚠️</span>
-                                  {errors.title}
-                                </p>
-                            )}
-                          </div>
-                          <div className="space-y-2 md:space-y-3">
-                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                              <span className="mr-2 text-blue-500 text-base md:text-lg">📝</span>
-                              Full Name *
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                    errors.name ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50" : ""
-                                }`}
-                                placeholder="Enter your full name"
-                                required
-                            />
-                            {errors.name && (
-                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                  <span className="mr-2 text-red-500">⚠️</span>
-                                  {errors.name}
-                                </p>
-                            )}
-                          </div>
-                        </div>
-                      </Fade>
-                      <Fade delay={200} triggerOnce>
-                        <div className="space-y-2 md:space-y-3">
-                          <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                            <span className="mr-2 text-blue-500 text-base md:text-lg">🌍</span>
-                            Nationality *
+                  <div className="space-y-8">
+                    <Fade delay={100} triggerOnce>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                            <User className="w-5 h-5 text-blue-600" />
+                            <span>Title *</span>
                           </label>
-                          <input
-                              type="text"
-                              name="nationality"
-                              value={formData.nationality}
-                              onChange={handleChange}
-                              className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                  errors.nationality
-                                      ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
-                                      : ""
-                              }`}
-                              placeholder="Enter your nationality"
-                              required
-                          />
-                          {errors.nationality && (
-                              <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                <span className="mr-2 text-red-500">⚠️</span>
-                                {errors.nationality}
-                              </p>
+                          <select
+                            name="title"
+                            value={formData.title}
+                            onChange={handleChange}
+                            className={`w-full px-4 py-4 rounded-xl border-2 bg-white font-medium text-slate-800 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300 ${
+                              errors.title
+                                ? "border-red-400 focus:border-red-500"
+                                : "border-slate-200 focus:border-blue-500"
+                            }`}
+                            required
+                          >
+                            <option value="" disabled>
+                              Select Your Title
+                            </option>
+                            <option value="Mr">Mr</option>
+                            <option value="Mrs">Mrs</option>
+                            <option value="Ms">Ms</option>
+                            <option value="Miss">Miss</option>
+                            <option value="Dr">Dr</option>
+                            <option value="Prof">Prof</option>
+                          </select>
+                          {errors.title && (
+                            <p className="text-red-500 text-sm flex items-center space-x-2">
+                              <span>⚠️</span>
+                              <span>{errors.title}</span>
+                            </p>
                           )}
                         </div>
-                      </Fade>
-                      <Fade delay={300} triggerOnce>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                          <div className="space-y-2 md:space-y-3">
-                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                              <span className="mr-2 text-blue-500 text-base md:text-lg">📧</span>
-                              Email Address *
-                            </label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                    errors.email ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50" : ""
-                                }`}
-                                placeholder="your.email@example.com"
-                                required
-                            />
-                            {errors.email && (
-                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                  <span className="mr-2 text-red-500">⚠️</span>
-                                  {errors.email}
-                                </p>
-                            )}
-                          </div>
-                          <div className="space-y-2 md:space-y-3">
-                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                              <span className="mr-2 text-blue-500 text-base md:text-lg">📞</span>
-                              Phone Number *
-                            </label>
-                            <input
-                                type="tel"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                    errors.phone ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50" : ""
-                                }`}
-                                placeholder="+1 234 567 8900"
-                                required
-                            />
-                            {errors.phone && (
-                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                  <span className="mr-2 text-red-500">⚠️</span>
-                                  {errors.phone}
-                                </p>
-                            )}
-                          </div>
+                        <div className="space-y-3">
+                          <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                            <User className="w-5 h-5 text-blue-600" />
+                            <span>Full Name *</span>
+                          </label>
+                          <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className={`w-full px-4 py-4 rounded-xl border-2 bg-white font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300 ${
+                              errors.name
+                                ? "border-red-400 focus:border-red-500"
+                                : "border-slate-200 focus:border-blue-500"
+                            }`}
+                            placeholder="Enter your full name"
+                            required
+                          />
+                          {errors.name && (
+                            <p className="text-red-500 text-sm flex items-center space-x-2">
+                              <span>⚠️</span>
+                              <span>{errors.name}</span>
+                            </p>
+                          )}
                         </div>
-                      </Fade>
-                    </div>
+                      </div>
+                    </Fade>
+
+                    <Fade delay={200} triggerOnce>
+                      <div className="space-y-3">
+                        <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                          <Globe className="w-5 h-5 text-blue-600" />
+                          <span>Nationality *</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="nationality"
+                          value={formData.nationality}
+                          onChange={handleChange}
+                          className={`w-full px-4 py-4 rounded-xl border-2 bg-white font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300 ${
+                            errors.nationality
+                              ? "border-red-400 focus:border-red-500"
+                              : "border-slate-200 focus:border-blue-500"
+                          }`}
+                          placeholder="Enter your nationality"
+                          required
+                        />
+                        {errors.nationality && (
+                          <p className="text-red-500 text-sm flex items-center space-x-2">
+                            <span>⚠️</span>
+                            <span>{errors.nationality}</span>
+                          </p>
+                        )}
+                      </div>
+                    </Fade>
+
+                    <Fade delay={300} triggerOnce>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                            <Mail className="w-5 h-5 text-blue-600" />
+                            <span>Email Address *</span>
+                          </label>
+                          <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className={`w-full px-4 py-4 rounded-xl border-2 bg-white font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300 ${
+                              errors.email
+                                ? "border-red-400 focus:border-red-500"
+                                : "border-slate-200 focus:border-blue-500"
+                            }`}
+                            placeholder="your.email@example.com"
+                            required
+                          />
+                          {errors.email && (
+                            <p className="text-red-500 text-sm flex items-center space-x-2">
+                              <span>⚠️</span>
+                              <span>{errors.email}</span>
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-3">
+                          <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                            <Phone className="w-5 h-5 text-blue-600" />
+                            <span>Phone Number *</span>
+                          </label>
+                          <input
+                            type="tel"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className={`w-full px-4 py-4 rounded-xl border-2 bg-white font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300 ${
+                              errors.phone
+                                ? "border-red-400 focus:border-red-500"
+                                : "border-slate-200 focus:border-blue-500"
+                            }`}
+                            placeholder="+1 234 567 8900"
+                            required
+                          />
+                          {errors.phone && (
+                            <p className="text-red-500 text-sm flex items-center space-x-2">
+                              <span>⚠️</span>
+                              <span>{errors.phone}</span>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </Fade>
+                  </div>
                 )}
 
                 {step === 2 && (
-                    <div className="space-y-6 md:space-y-8">
-                      <Fade delay={100} triggerOnce>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                          <div className="space-y-2 md:space-y-3">
-                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                              <span className="mr-2 text-blue-500 text-base md:text-lg">📅</span>
-                              Travel Start Date *
-                            </label>
-                            <input
-                                type="date"
-                                name="startDate"
-                                value={formData.startDate}
-                                onChange={handleChange}
-                                min={today}
-                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                    errors.startDate
-                                        ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
-                                        : ""
-                                }`}
-                                required
-                            />
-                            {errors.startDate && (
-                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                  <span className="mr-2 text-red-500">⚠️</span>
-                                  {errors.startDate}
-                                </p>
-                            )}
-                            <p className="text-xs text-slate-500 mt-2 flex items-center">
-                              <span className="mr-1 text-slate-400">ℹ️</span>
-                              You can select from today onwards
-                            </p>
-                          </div>
-                          <div className="space-y-2 md:space-y-3">
-                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                              <span className="mr-2 text-blue-500 text-base md:text-lg">🌙</span>
-                              Number of Nights *
-                            </label>
-                            <input
-                                type="number"
-                                name="nights"
-                                value={formData.nights}
-                                onChange={handleChange}
-                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                    errors.nights
-                                        ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
-                                        : ""
-                                }`}
-                                placeholder="7"
-                                min="1"
-                                max="365"
-                                required
-                            />
-                            {errors.nights && (
-                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                  <span className="mr-2 text-red-500">⚠️</span>
-                                  {errors.nights}
-                                </p>
-                            )}
-                          </div>
-                        </div>
-                      </Fade>
-                      <Fade delay={200} triggerOnce>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                          <div className="space-y-2 md:space-y-3">
-                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                              <span className="mr-2 text-blue-500 text-base md:text-lg">👥</span>
-                              Number of Adults *
-                            </label>
-                            <input
-                                type="number"
-                                name="adults"
-                                value={formData.adults}
-                                onChange={handleChange}
-                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                    errors.adults
-                                        ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
-                                        : ""
-                                }`}
-                                placeholder="2"
-                                min="1"
-                                max="20"
-                                required
-                            />
-                            {errors.adults && (
-                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                  <span className="mr-2 text-red-500">⚠️</span>
-                                  {errors.adults}
-                                </p>
-                            )}
-                          </div>
-                          <div className="space-y-2 md:space-y-3">
-                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                              <span className="mr-2 text-blue-500 text-base md:text-lg">👶</span>
-                              Number of Children
-                            </label>
-                            <input
-                                type="number"
-                                name="children"
-                                value={formData.children}
-                                onChange={handleChange}
-                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                    errors.children
-                                        ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
-                                        : ""
-                                }`}
-                                placeholder="0"
-                                min="0"
-                                max="20"
-                            />
-                            {errors.children && (
-                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                  <span className="mr-2 text-red-500">⚠️</span>
-                                  {errors.children}
-                                </p>
-                            )}
-                          </div>
-                        </div>
-                      </Fade>
-                      <Fade delay={300} triggerOnce>
-                        <div className="space-y-2 md:space-y-3">
-                          <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                            <span className="mr-2 text-blue-500 text-base md:text-lg">🏨</span>
-                            Type of Accommodation *
+                  <div className="space-y-8">
+                    <Fade delay={100} triggerOnce>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                            <Calendar className="w-5 h-5 text-blue-600" />
+                            <span>Travel Start Date *</span>
                           </label>
-                          <select
-                              name="accommodation"
-                              value={formData.accommodation}
-                              onChange={handleChange}
-                              className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 transition-all duration-300 ease-out cursor-pointer focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                  errors.accommodation
-                                      ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
-                                      : ""
-                              }`}
-                              required
-                          >
-                            <option value="" disabled>
-                              Select accommodation type
-                            </option>
-                            <option value="5-star hotel">🏨 5 Star Luxury Hotel</option>
-                            <option value="4-star hotel">🏨 4 Star Hotel</option>
-                            <option value="3-star hotel">🏨 3 Star Hotel</option>
-                            <option value="luxury boutique">🏛️ Luxury Boutique Hotel</option>
-                            <option value="eco-lodge">🌿 Eco Lodge</option>
-                            <option value="wallet-friendly">💰 Budget Friendly</option>
-                          </select>
-                          {errors.accommodation && (
-                              <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                <span className="mr-2 text-red-500">⚠️</span>
-                                {errors.accommodation}
-                              </p>
+                          <input
+                            type="date"
+                            name="startDate"
+                            value={formData.startDate}
+                            onChange={handleChange}
+                            min={today}
+                            className={`w-full px-4 py-4 rounded-xl border-2 bg-white font-medium text-slate-800 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300 ${
+                              errors.startDate
+                                ? "border-red-400 focus:border-red-500"
+                                : "border-slate-200 focus:border-blue-500"
+                            }`}
+                            required
+                          />
+                          {errors.startDate && (
+                            <p className="text-red-500 text-sm flex items-center space-x-2">
+                              <span>⚠️</span>
+                              <span>{errors.startDate}</span>
+                            </p>
                           )}
                         </div>
-                      </Fade>
-                    </div>
+                        <div className="space-y-3">
+                          <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                            <Moon className="w-5 h-5 text-blue-600" />
+                            <span>Number of Nights *</span>
+                          </label>
+                          <input
+                            type="number"
+                            name="nights"
+                            value={formData.nights}
+                            onChange={handleChange}
+                            className={`w-full px-4 py-4 rounded-xl border-2 bg-white font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300 ${
+                              errors.nights
+                                ? "border-red-400 focus:border-red-500"
+                                : "border-slate-200 focus:border-blue-500"
+                            }`}
+                            placeholder="7"
+                            min="1"
+                            max="365"
+                            required
+                          />
+                          {errors.nights && (
+                            <p className="text-red-500 text-sm flex items-center space-x-2">
+                              <span>⚠️</span>
+                              <span>{errors.nights}</span>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </Fade>
+
+                    <Fade delay={200} triggerOnce>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                            <Users className="w-5 h-5 text-blue-600" />
+                            <span>Number of Adults *</span>
+                          </label>
+                          <input
+                            type="number"
+                            name="adults"
+                            value={formData.adults}
+                            onChange={handleChange}
+                            className={`w-full px-4 py-4 rounded-xl border-2 bg-white font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300 ${
+                              errors.adults
+                                ? "border-red-400 focus:border-red-500"
+                                : "border-slate-200 focus:border-blue-500"
+                            }`}
+                            placeholder="2"
+                            min="1"
+                            max="20"
+                            required
+                          />
+                          {errors.adults && (
+                            <p className="text-red-500 text-sm flex items-center space-x-2">
+                              <span>⚠️</span>
+                              <span>{errors.adults}</span>
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-3">
+                          <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                            <Baby className="w-5 h-5 text-blue-600" />
+                            <span>Number of Children</span>
+                          </label>
+                          <input
+                            type="number"
+                            name="children"
+                            value={formData.children}
+                            onChange={handleChange}
+                            className={`w-full px-4 py-4 rounded-xl border-2 bg-white font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300 ${
+                              errors.children
+                                ? "border-red-400 focus:border-red-500"
+                                : "border-slate-200 focus:border-blue-500"
+                            }`}
+                            placeholder="0"
+                            min="0"
+                            max="20"
+                          />
+                          {errors.children && (
+                            <p className="text-red-500 text-sm flex items-center space-x-2">
+                              <span>⚠️</span>
+                              <span>{errors.children}</span>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </Fade>
+
+                    <Fade delay={300} triggerOnce>
+                      <div className="space-y-4">
+                        <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                          <Building className="w-5 h-5 text-blue-600" />
+                          <span>Type of Accommodation *</span>
+                        </label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {accommodationOptions.map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => handleCardSelect("accommodation", option.value)}
+                              className={`p-4 rounded-xl border-2 text-left transition-all duration-300 hover:scale-105 ${
+                                formData.accommodation === option.value
+                                  ? "border-blue-500 bg-blue-50 shadow-lg"
+                                  : "border-slate-200 bg-white hover:border-blue-300 hover:shadow-md"
+                              }`}
+                            >
+                              <div className="flex items-center space-x-3 mb-2">
+                                <div className="text-blue-600">{option.icon}</div>
+                                <span className="font-semibold text-slate-800">{option.label}</span>
+                                {formData.accommodation === option.value && (
+                                  <Check className="w-5 h-5 text-blue-600 ml-auto" />
+                                )}
+                              </div>
+                              <p className="text-sm text-slate-600">{option.description}</p>
+                            </button>
+                          ))}
+                        </div>
+                        {errors.accommodation && (
+                          <p className="text-red-500 text-sm flex items-center space-x-2">
+                            <span>⚠️</span>
+                            <span>{errors.accommodation}</span>
+                          </p>
+                        )}
+                      </div>
+                    </Fade>
+                  </div>
                 )}
 
                 {step === 3 && (
-                    <div className="space-y-6 md:space-y-8">
-                      <Fade delay={100} triggerOnce>
-                        <div className="space-y-2 md:space-y-3">
-                          <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                            <span className="mr-2 text-blue-500 text-base md:text-lg">💬</span>
-                            Special Requests or Notes
-                          </label>
-                          <textarea
-                              name="specialNote"
-                              value={formData.specialNote}
-                              onChange={handleChange}
-                              rows={4}
-                              className="w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out resize-none focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm"
-                              placeholder="Any dietary requirements, accessibility needs, special occasions, or other requests..."
-                          ></textarea>
+                  <div className="space-y-8">
+                    <Fade delay={100} triggerOnce>
+                      <div className="space-y-4">
+                        <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                          <MessageSquare className="w-5 h-5 text-blue-600" />
+                          <span>Special Requests or Notes</span>
+                        </label>
+                        <textarea
+                          name="specialNote"
+                          value={formData.specialNote}
+                          onChange={handleChange}
+                          rows={4}
+                          className="w-full px-4 py-4 rounded-xl border-2 border-slate-200 bg-white font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 resize-none focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300"
+                          placeholder="Any dietary requirements, accessibility needs, special occasions, or other requests..."
+                        ></textarea>
+                      </div>
+                    </Fade>
+
+                    <Fade delay={200} triggerOnce>
+                      <div className="space-y-4">
+                        <label className="flex items-center space-x-2 text-slate-700 font-semibold">
+                          <span className="text-blue-600 text-xl">❓</span>
+                          <span>How did you hear about us? *</span>
+                        </label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                          {hearAboutUsOptions.map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => handleCardSelect("hearAboutUs", option.value)}
+                              className={`p-4 rounded-xl border-2 text-left transition-all duration-300 hover:scale-105 ${
+                                formData.hearAboutUs === option.value
+                                  ? "border-blue-500 bg-blue-50 shadow-lg"
+                                  : "border-slate-200 bg-white hover:border-blue-300 hover:shadow-md"
+                              }`}
+                            >
+                              <div className="flex items-center space-x-3 mb-2">
+                                <div className="text-blue-600">{option.icon}</div>
+                                <span className="font-semibold text-slate-800">{option.label}</span>
+                                {formData.hearAboutUs === option.value && (
+                                  <Check className="w-5 h-5 text-blue-600 ml-auto" />
+                                )}
+                              </div>
+                              <p className="text-sm text-slate-600">{option.description}</p>
+                            </button>
+                          ))}
                         </div>
-                      </Fade>
-                      <Fade delay={200} triggerOnce>
-                        <div className="space-y-2 md:space-y-3">
-                          <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
-                            <span className="mr-2 text-blue-500 text-base md:text-lg">❓</span>
-                            How did you hear about us? *
-                          </label>
-                          <CustomSelect
-                              options={hearAboutUsOptions}
-                              value={formData.hearAboutUs}
-                              onChange={(value) => handleCustomSelectChange("hearAboutUs", value)}
-                              placeholder="Select an option"
-                              error={errors.hearAboutUs}
-                              required
+                        {errors.hearAboutUs && (
+                          <p className="text-red-500 text-sm flex items-center space-x-2">
+                            <span>⚠️</span>
+                            <span>{errors.hearAboutUs}</span>
+                          </p>
+                        )}
+                      </div>
+                    </Fade>
+
+                    {formData.hearAboutUs === "other" && (
+                      <Fade delay={300} triggerOnce>
+                        <div className="space-y-3">
+                          <label className="text-slate-700 font-semibold">Please specify</label>
+                          <input
+                            type="text"
+                            name="otherDetails"
+                            value={formData.otherDetails}
+                            onChange={handleChange}
+                            className={`w-full px-4 py-4 rounded-xl border-2 bg-white font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 hover:border-blue-300 ${
+                              errors.otherDetails
+                                ? "border-red-400 focus:border-red-500"
+                                : "border-slate-200 focus:border-blue-500"
+                            }`}
+                            placeholder="Please tell us how you found us"
                           />
-                          {errors.hearAboutUs && (
-                              <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                <span className="mr-2 text-red-500">⚠️</span>
-                                {errors.hearAboutUs}
-                              </p>
+                          {errors.otherDetails && (
+                            <p className="text-red-500 text-sm flex items-center space-x-2">
+                              <span>⚠️</span>
+                              <span>{errors.otherDetails}</span>
+                            </p>
                           )}
                         </div>
                       </Fade>
-                      {formData.hearAboutUs === "other" && (
-                          <Fade delay={300} triggerOnce>
-                            <div className="space-y-2 md:space-y-3">
-                              <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase">
-                                Please specify
-                              </label>
-                              <input
-                                  type="text"
-                                  name="otherDetails"
-                                  value={formData.otherDetails}
-                                  onChange={handleChange}
-                                  className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
-                                      errors.otherDetails
-                                          ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
-                                          : ""
-                                  }`}
-                                  placeholder="Please tell us how you found us"
-                              />
-                              {errors.otherDetails && (
-                                  <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
-                                    <span className="mr-2 text-red-500">⚠️</span>
-                                    {errors.otherDetails}
-                                  </p>
-                              )}
-                            </div>
-                          </Fade>
-                      )}
-                    </div>
+                    )}
+                  </div>
                 )}
 
-                {/* Navigation Buttons */}
+                {/* Navigation */}
                 <Fade delay={400} triggerOnce>
-                  <div className="flex flex-col sm:flex-row justify-between items-center pt-8 md:pt-12 border-t border-slate-200 space-y-4 sm:space-y-0">
+                  <div className="flex justify-between items-center pt-8 border-t border-slate-200">
                     {step > 1 ? (
-                        <button
-                            type="button"
-                            onClick={handleBack}
-                            className="w-full sm:w-auto font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg md:rounded-xl shadow-lg transform transition-all duration-300 focus:outline-none focus:ring-4 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 text-slate-700 hover:shadow-lg hover:scale-105 focus:ring-slate-300/50"
-                            disabled={isSubmitting}
-                        >
-                          <span>←</span>
-                          <span>Previous Step</span>
-                        </button>
+                      <button
+                        type="button"
+                        onClick={handleBack}
+                        className="flex items-center space-x-2 px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition-all duration-300 hover:scale-105"
+                        disabled={isSubmitting}
+                      >
+                        <ArrowLeft className="w-5 h-5" />
+                        <span>Previous</span>
+                      </button>
                     ) : (
-                        <div></div>
+                      <div></div>
                     )}
-                    <div className="flex items-center space-x-4">
-                      {step < 3 ? (
-                          <button
-                              type="button"
-                              onClick={handleNext}
-                              className="w-full sm:w-auto font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg md:rounded-xl shadow-lg transform transition-all duration-300 focus:outline-none focus:ring-4 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white hover:shadow-xl hover:scale-105 focus:ring-blue-500/50 shadow-blue-500/25"
-                              disabled={isSubmitting}
-                          >
-                            <span>Continue</span>
-                            <span>→</span>
-                          </button>
-                      ) : (
-                          <button
-                              type="submit"
-                              className="w-full sm:w-auto font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg md:rounded-xl shadow-lg transform transition-all duration-300 focus:outline-none focus:ring-4 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white hover:shadow-xl hover:scale-105 focus:ring-blue-500/50 shadow-blue-500/25"
-                              disabled={isSubmitting}
-                          >
-                            {isSubmitting ? (
-                                <>
-                                  <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-b-2 border-white"></div>
-                                  <span>Submitting...</span>
-                                </>
-                            ) : (
-                                <>
-                                  <span>✓</span>
-                                  <span>Submit Booking</span>
-                                </>
-                            )}
-                          </button>
-                      )}
-                    </div>
-                  </div>
-                </Fade>
 
-                {/* Quick Response Guarantee */}
-                <Fade delay={500} triggerOnce>
-                  <div className="bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 rounded-2xl md:rounded-3xl p-4 md:p-8 border border-amber-200/50 shadow-lg mt-8 md:mt-12">
-                    <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-6">
-                      <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl md:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg text-xl md:text-2xl">
-                        ⚡
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-xl md:text-2xl font-bold text-slate-900 mb-2 md:mb-4 flex items-center">
-                          <span className="mr-2 md:mr-3 text-amber-600">🏆</span>
-                          Quick Response Guarantee
-                        </h4>
-                        <p className="text-slate-700 mb-4 md:mb-6 text-base md:text-lg leading-relaxed">
-                          We respond to all inquiries within{" "}
-                          <span className="font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-lg">
-                          2 hours during business hours
-                        </span>
-                          , and within{" "}
-                          <span className="font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-lg">
-                          24 hours on weekends
-                        </span>
-                          . Your dream vacation planning starts immediately!
-                        </p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                          <div className="flex items-center space-x-3 md:space-x-4 bg-white/60 rounded-xl md:rounded-2xl p-3 md:p-4 shadow-sm">
-                            <div className="w-10 h-10 md:w-12 md:h-12 bg-teal-100 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-xl">
-                              🕐
-                            </div>
-                            <div>
-                              <div className="font-bold text-slate-900 text-base md:text-lg">Business Hours</div>
-                              <div className="text-slate-600 text-sm md:text-base">Mon-Fri: 8AM-8PM</div>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-3 md:space-x-4 bg-white/60 rounded-xl md:rounded-2xl p-3 md:p-4 shadow-sm">
-                            <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-xl">
-                              📅
-                            </div>
-                            <div>
-                              <div className="font-bold text-slate-900 text-base md:text-lg">Weekends</div>
-                              <div className="text-slate-600 text-sm md:text-base">Sat-Sun: 9AM-6PM</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    {step < 3 ? (
+                      <button
+                        type="button"
+                        onClick={handleNext}
+                        className="flex items-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
+                        disabled={isSubmitting}
+                      >
+                        <span>Continue</span>
+                        <ArrowRight className="w-5 h-5" />
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        className="flex items-center space-x-2 px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                            <span>Submitting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check className="w-5 h-5" />
+                            <span>Submit Booking</span>
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </Fade>
               </form>
             </div>
-          </Fade>
-        </div>
+          </div>
+        </Fade>
+
+        {/* Trust Indicators */}
+        <Fade delay={600} triggerOnce>
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 text-center">
+              <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-6 h-6 text-emerald-600" />
+              </div>
+              <h3 className="font-semibold text-slate-800 mb-2">Quick Response</h3>
+              <p className="text-slate-600 text-sm">We respond within 2 hours during business hours</p>
+            </div>
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-6 h-6 text-blue-600" />
+              </div>
+              <h3 className="font-semibold text-slate-800 mb-2">Secure Booking</h3>
+              <p className="text-slate-600 text-sm">Your information is protected and encrypted</p>
+            </div>
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 text-center">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Award className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="font-semibold text-slate-800 mb-2">Best Experience</h3>
+              <p className="text-slate-600 text-sm">Tailored trips for unforgettable memories</p>
+            </div>
+          </div>
+        </Fade>
       </div>
+    </div>
   )
 }
 
