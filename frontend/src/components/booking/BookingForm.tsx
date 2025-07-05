@@ -1,8 +1,8 @@
 "use client"
-
 import React from "react"
-import { useState, type ChangeEvent, type FormEvent } from "react"
-import { Fade, Slide } from "react-awesome-reveal"
+import { useState, useEffect, useRef } from "react"
+import { Fade } from "react-awesome-reveal"
+import { ChevronDown, Check } from "lucide-react"
 
 interface FormData {
   title: string
@@ -25,9 +25,99 @@ interface ValidationErrors {
 }
 
 interface ToastMessage {
-  type: "success" | "error" | "warning"
+  type: "success" | "error" | "warning" | "info"
   message: string
   show: boolean
+}
+
+interface SelectOption {
+  value: string
+  label: string
+  icon: React.ReactNode
+}
+
+const CustomSelect: React.FC<{
+  options: SelectOption[]
+  value: string
+  onChange: (value: string) => void
+  placeholder: string
+  error?: string
+  required?: boolean
+}> = ({ options, value, onChange, placeholder, error, required }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const selected = options.find((option) => option.value === value)
+    setSelectedOption(selected || null)
+  }, [value, options])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen])
+
+  const handleSelect = (option: SelectOption) => {
+    onChange(option.value)
+    setIsOpen(false)
+  }
+
+  return (
+      <div className={`relative ${isOpen ? "z-40" : ""}`} ref={dropdownRef}>
+        <button
+            ref={buttonRef}
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm text-left flex items-center justify-between ${
+                error ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50" : ""
+            }`}
+        >
+          <div className="flex items-center space-x-3">
+            {selectedOption ? (
+                <>
+                  <span className="text-blue-500 flex-shrink-0">{selectedOption.icon}</span>
+                  <span>{selectedOption.label}</span>
+                </>
+            ) : (
+                <span className="text-slate-400">{placeholder}</span>
+            )}
+          </div>
+          <ChevronDown
+              className={`w-5 h-5 text-slate-400 transition-transform duration-200 flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+
+        {isOpen && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-slate-200 rounded-lg md:rounded-xl shadow-xl z-40 max-h-48 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
+              {options.map((option) => (
+                  <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleSelect(option)}
+                      className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors duration-200 flex items-center space-x-3 border-b border-slate-100 last:border-b-0"
+                  >
+                    <span className="text-blue-500 flex-shrink-0">{option.icon}</span>
+                    <span className="font-medium text-slate-800 flex-1">{option.label}</span>
+                    {value === option.value && <Check className="w-4 h-4 text-blue-500 flex-shrink-0" />}
+                  </button>
+              ))}
+            </div>
+        )}
+      </div>
+  )
 }
 
 const BookingForm: React.FC = () => {
@@ -55,16 +145,45 @@ const BookingForm: React.FC = () => {
     otherDetails: "",
   })
 
-  const showToast = (type: "success" | "error" | "warning", message: string) => {
-    setToast({ type, message, show: true })
-    setTimeout(() => {
-      setToast((prev) => ({ ...prev, show: false }))
-    }, 5000)
+  const handleBack = () => {
+    setStep((prevStep) => prevStep - 1)
   }
 
+  const handleNext = () => {
+    let stepErrors: ValidationErrors = {}
+    if (step === 1) {
+      stepErrors = validateStep1()
+    } else if (step === 2) {
+      stepErrors = validateStep2()
+    }
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors(stepErrors)
+      showToast("error", "Please fix the errors before proceeding")
+      return
+    }
+    setErrors({})
+    setStep(step + 1)
+    showToast("success", `Step ${step} completed successfully!`)
+  }
+
+  // Auto-hide toast after 5 seconds
+  useEffect(() => {
+    if (toast.show) {
+      const timer = setTimeout(() => {
+        setToast((prev) => ({ ...prev, show: false }))
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [toast.show])
+
+  const showToast = (type: ToastMessage["type"], message: string) => {
+    setToast({ type, message, show: true })
+  }
+
+  // Validation functions
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
+    return emailRegex.test(email.trim())
   }
 
   const validateName = (name: string): boolean => {
@@ -72,153 +191,143 @@ const BookingForm: React.FC = () => {
     return nameRegex.test(name.trim())
   }
 
-  const validateNationality = (nationality: string): boolean => {
-    const nationalityRegex = /^[a-zA-Z\s]{2,50}$/
-    return nationalityRegex.test(nationality.trim())
+  const validatePhone = (phone: string): boolean => {
+    const phoneRegex = /^[+]?[1-9][\d\s\-()]{7,15}$/
+    return phoneRegex.test(phone.replace(/\s/g, ""))
   }
 
   const validateDate = (date: string): boolean => {
+    if (!date) return false
     const selectedDate = new Date(date)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
+    selectedDate.setHours(0, 0, 0, 0)
     return selectedDate >= today
   }
 
   const validateStep1 = (): ValidationErrors => {
     const stepErrors: ValidationErrors = {}
-
     if (!formData.title.trim()) {
       stepErrors.title = "Please select a title"
     }
-
     if (!formData.name.trim()) {
       stepErrors.name = "Name is required"
     } else if (!validateName(formData.name)) {
       stepErrors.name = "Name should contain only letters and be 2-50 characters long"
     }
-
     if (!formData.nationality.trim()) {
       stepErrors.nationality = "Nationality is required"
-    } else if (!validateNationality(formData.nationality)) {
+    } else if (!validateName(formData.nationality)) {
       stepErrors.nationality = "Nationality should contain only letters and be 2-50 characters long"
     }
-
     if (!formData.email.trim()) {
       stepErrors.email = "Email is required"
     } else if (!validateEmail(formData.email)) {
       stepErrors.email = "Please enter a valid email address"
     }
-
     if (!formData.phone.trim()) {
       stepErrors.phone = "Phone number is required"
+    } else if (!validatePhone(formData.phone)) {
+      stepErrors.phone = "Please enter a valid phone number"
     }
-
     return stepErrors
   }
 
   const validateStep2 = (): ValidationErrors => {
     const stepErrors: ValidationErrors = {}
-
     if (!formData.startDate) {
       stepErrors.startDate = "Start date is required"
     } else if (!validateDate(formData.startDate)) {
       stepErrors.startDate = "Start date cannot be in the past"
     }
-
     if (!formData.nights) {
       stepErrors.nights = "Number of nights is required"
-    } else if (Number.parseInt(formData.nights) < 1 || Number.parseInt(formData.nights) > 365) {
-      stepErrors.nights = "Number of nights must be between 1 and 365"
+    } else {
+      const nights = Number.parseInt(formData.nights, 10)
+      if (isNaN(nights) || nights < 1 || nights > 365) {
+        stepErrors.nights = "Number of nights must be between 1 and 365"
+      }
     }
-
     if (!formData.adults) {
       stepErrors.adults = "Number of adults is required"
-    } else if (Number.parseInt(formData.adults) < 1 || Number.parseInt(formData.adults) > 20) {
-      stepErrors.adults = "Number of adults must be between 1 and 20"
+    } else {
+      const adults = Number.parseInt(formData.adults, 10)
+      if (isNaN(adults) || adults < 1 || adults > 20) {
+        stepErrors.adults = "Number of adults must be between 1 and 20"
+      }
     }
-
-    if (formData.children && (Number.parseInt(formData.children) < 0 || Number.parseInt(formData.children) > 20)) {
-      stepErrors.children = "Number of children must be between 0 and 20"
+    if (formData.children) {
+      const children = Number.parseInt(formData.children, 10)
+      if (isNaN(children) || children < 0 || children > 20) {
+        stepErrors.children = "Number of children must be between 0 and 20"
+      }
     }
-
     if (!formData.accommodation) {
       stepErrors.accommodation = "Please select accommodation type"
     }
-
     return stepErrors
   }
 
   const validateStep3 = (): ValidationErrors => {
     const stepErrors: ValidationErrors = {}
-
     if (!formData.hearAboutUs) {
       stepErrors.hearAboutUs = "Please tell us how you heard about us"
     }
-
     if (formData.hearAboutUs === "other" && !formData.otherDetails.trim()) {
       stepErrors.otherDetails = "Please specify how you heard about us"
     }
-
     return stepErrors
   }
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target
-    setFormData({ ...formData, [name]: value })
-
+    setFormData((prev) => ({ ...prev, [name]: value }))
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
   }
 
-  const handleNext = (): void => {
-    let stepErrors: ValidationErrors = {}
-
-    if (step === 1) {
-      stepErrors = validateStep1()
-    } else if (step === 2) {
-      stepErrors = validateStep2()
+  const handleCustomSelectChange = (name: string, value: string): void => {
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    // Clear error when user selects
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }))
     }
-
-    if (Object.keys(stepErrors).length > 0) {
-      setErrors(stepErrors)
-      showToast("error", "Please fix the errors before proceeding")
-      return
-    }
-
-    setErrors({})
-    setStep(step + 1)
-    showToast("success", `Step ${step} completed successfully!`)
   }
 
-  const handleBack = (): void => {
-    setStep(step - 1)
-    setErrors({})
-  }
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
-
     const step3Errors = validateStep3()
     if (Object.keys(step3Errors).length > 0) {
       setErrors(step3Errors)
       showToast("error", "Please fix the errors before submitting")
       return
     }
-
     setIsSubmitting(true)
     setErrors({})
-
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      console.log("Form Data Submitted: ", formData)
-
+      const payload = {
+        tourId: 1,
+        title: formData.title,
+        name: formData.name,
+        nationality: formData.nationality,
+        email: formData.email,
+        phone: formData.phone,
+        startDate: formData.startDate,
+        nights: Number.parseInt(formData.nights, 10) || 0,
+        adults: Number.parseInt(formData.adults, 10) || 0,
+        children: Number.parseInt(formData.children || "0", 10),
+        accommodation: formData.accommodation,
+        specialNote: formData.specialNote,
+        hearAboutUs: formData.hearAboutUs,
+        otherDetails: formData.otherDetails,
+      }
+      console.log("Booking submitted:", payload)
       showToast("success", "🎉 Booking submitted successfully! We will contact you within 24 hours.")
-
-      // Reset form after successful submission
+      // Reset form after success
       setTimeout(() => {
         setFormData({
           title: "",
@@ -238,6 +347,7 @@ const BookingForm: React.FC = () => {
         setStep(1)
       }, 3000)
     } catch (error) {
+      console.error("Submission error:", error)
       showToast("error", "Failed to submit booking. Please try again.")
     } finally {
       setIsSubmitting(false)
@@ -260,517 +370,642 @@ const BookingForm: React.FC = () => {
   const getStepIcon = (): string => {
     switch (step) {
       case 1:
-        return "bi-person-fill"
+        return "👤"
       case 2:
-        return "bi-calendar-event"
+        return "📅"
       case 3:
-        return "bi-chat-square-text"
+        return "💬"
       default:
-        return "bi-form"
+        return "📝"
     }
   }
 
   const getToastIcon = (type: string): string => {
     switch (type) {
       case "success":
-        return "bi-check-circle-fill"
+        return "✅"
       case "error":
-        return "bi-exclamation-triangle-fill"
+        return "❌"
       case "warning":
-        return "bi-info-circle-fill"
+        return "⚠️"
+      case "info":
+        return "ℹ️"
       default:
-        return "bi-info-circle-fill"
+        return "ℹ️"
     }
   }
 
-  const getToastColor = (type: string): string => {
-    switch (type) {
-      case "success":
-        return "bg-green-500"
-      case "error":
-        return "bg-red-500"
-      case "warning":
-        return "bg-yellow-500"
-      default:
-        return "bg-blue-500"
-    }
-  }
+  // Get today's date in YYYY-MM-DD format for min date
+  const today = new Date().toISOString().split("T")[0]
+
+  // Options for "How did you hear about us?" dropdown
+  const hearAboutUsOptions: SelectOption[] = [
+    {
+      value: "google",
+      label: "Google Search",
+      icon: <span className="text-base">🔍</span>,
+    },
+    {
+      value: "facebook",
+      label: "Facebook",
+      icon: <span className="text-base">📘</span>,
+    },
+    {
+      value: "instagram",
+      label: "Instagram",
+      icon: <span className="text-base">📷</span>,
+    },
+    {
+      value: "twitter",
+      label: "Twitter",
+      icon: <span className="text-base">🐦</span>,
+    },
+    {
+      value: "trip-advisor",
+      label: "TripAdvisor",
+      icon: <span className="text-base">✈️</span>,
+    },
+    {
+      value: "friend-family",
+      label: "Friend or Family Recommendation",
+      icon: <span className="text-base">👥</span>,
+    },
+    {
+      value: "travel-blog",
+      label: "Travel Blog",
+      icon: <span className="text-base">📝</span>,
+    },
+    {
+      value: "other",
+      label: "Other",
+      icon: <span className="text-base">❓</span>,
+    },
+  ]
 
   return (
-      <div className="w-full">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute w-72 h-72 md:w-80 md:h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 -top-36 -right-36 md:-top-40 md:-right-40 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+        <div className="absolute w-72 h-72 md:w-80 md:h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 -bottom-36 -left-36 md:-bottom-40 md:-left-40 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+        <div className="absolute w-80 h-80 md:w-96 md:h-96 bg-gradient-to-br from-teal-400/10 to-cyan-400/10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+
         {/* Toast Notification */}
         <div
-            className={`fixed top-24 right-4 z-50 transform transition-all duration-500 ease-in-out ${
-                toast.show ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+            className={`fixed top-4 right-4 z-50 transform transition-all duration-500 ease-out ${
+                toast.show ? "translate-x-0 opacity-100 scale-100" : "translate-x-full opacity-0 scale-95"
             }`}
         >
-          <div className={`${getToastColor(toast.type)} text-white px-6 py-4 rounded-xl shadow-2xl max-w-md`}>
+          <div
+              className={`text-white px-4 py-3 md:px-6 md:py-4 rounded-2xl shadow-2xl max-w-xs md:max-w-md backdrop-blur-sm border border-white/20 ${
+                  toast.type === "success"
+                      ? "bg-gradient-to-r from-emerald-500 to-teal-600"
+                      : toast.type === "error"
+                          ? "bg-gradient-to-r from-red-500 to-rose-600"
+                          : toast.type === "warning"
+                              ? "bg-gradient-to-r from-amber-500 to-orange-600"
+                              : "bg-gradient-to-r from-blue-500 to-indigo-600"
+              }`}
+          >
             <div className="flex items-center space-x-3">
-              <i className={`${getToastIcon(toast.type)} text-xl`}></i>
-              <div>
-                <p className="font-semibold text-sm">{toast.message}</p>
-              </div>
+              <div className="text-lg">{getToastIcon(toast.type)}</div>
+              <div className="font-semibold text-xs md:text-sm leading-relaxed flex-1">{toast.message}</div>
               <button
                   onClick={() => setToast((prev) => ({ ...prev, show: false }))}
-                  className="ml-auto text-white hover:text-gray-200 transition-colors duration-200"
+                  className="ml-2 w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors duration-200"
               >
-                <i className="bi bi-x-lg"></i>
+                ✕
               </button>
             </div>
           </div>
         </div>
 
-        <Fade triggerOnce>
-          <div className="bg-white rounded-2xl shadow-xl p-6 lg:p-8 w-full">
-            {/* Header */}
-            <div className="mb-8">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-                <div className="flex items-center space-x-3 mb-4 sm:mb-0">
-                  <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <i className={`${getStepIcon()} text-white text-lg`}></i>
+        <div className="max-w-4xl mx-auto px-4 py-6 md:py-8">
+          <Fade triggerOnce>
+            <div className="bg-white/90 backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-2xl border border-white/20 p-4 md:p-8 lg:p-12 relative z-10">
+              {/* Header Section */}
+              <div className="text-center mb-8 md:mb-12">
+                <Fade delay={100} triggerOnce>
+                  <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl md:rounded-3xl mb-4 md:mb-6 shadow-lg text-2xl md:text-3xl">
+                    {getStepIcon()}
                   </div>
-                  <div>
-                    <h2 className="text-xl lg:text-2xl font-bold text-gray-900">Fill in your details</h2>
-                    <p className="text-gray-600 text-sm">
-                      Step {step} of 3 - {getStepTitle()}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Step indicators */}
-                <div className="flex space-x-2 justify-center sm:justify-end">
-                  {[1, 2, 3].map((stepNum) => (
-                      <div
-                          key={stepNum}
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                              stepNum === step
-                                  ? "bg-gradient-to-r from-teal-500 to-blue-600 text-white scale-110"
-                                  : stepNum < step
-                                      ? "bg-green-500 text-white"
-                                      : "bg-gray-200 text-gray-500"
-                          }`}
-                      >
-                        {stepNum < step ? <i className="bi bi-check text-xs"></i> : stepNum}
-                      </div>
-                  ))}
-                </div>
+                </Fade>
+                <Fade delay={200} triggerOnce>
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-800 bg-clip-text text-transparent mb-2 md:mb-4">
+                    Book Your Dream Journey
+                  </h1>
+                </Fade>
+                <Fade delay={300} triggerOnce>
+                  <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                    Step {step} of 3 - {getStepTitle()}
+                  </p>
+                </Fade>
               </div>
 
-              {/* Progress bar */}
-              <div className="relative">
-                <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
-                  <div
-                      className="bg-gradient-to-r from-teal-500 to-blue-600 h-2 rounded-full transition-all duration-700 ease-out"
-                      style={{ width: `${(step / 3) * 100}%` }}
-                  ></div>
+              {/* Progress Section */}
+              <Fade delay={400} triggerOnce>
+                <div className="relative mb-8 md:mb-12">
+                  {/* Step Indicators */}
+                  <div className="flex justify-center items-center space-x-4 md:space-x-8 mb-6 md:mb-8">
+                    {[1, 2, 3].map((stepNum, index) => (
+                        <Fade key={stepNum} delay={500 + index * 100} triggerOnce>
+                          <div className="flex flex-col items-center">
+                            <div
+                                className={`w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-base md:text-lg font-bold transition-all duration-500 ease-out shadow-lg ${
+                                    stepNum === step
+                                        ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white scale-110 shadow-blue-500/30"
+                                        : stepNum < step
+                                            ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/30"
+                                            : "bg-slate-200 text-slate-500"
+                                }`}
+                            >
+                              {stepNum < step ? "✓" : stepNum}
+                            </div>
+                            <span className="text-xs md:text-sm font-semibold text-slate-600 mt-2 md:mt-3 text-center">
+                          {stepNum === 1 ? "Personal" : stepNum === 2 ? "Travel" : "Additional"}
+                        </span>
+                          </div>
+                        </Fade>
+                    ))}
+                  </div>
+                  {/* Progress Bar */}
+                  <div className="bg-slate-200 rounded-full h-2 md:h-3 overflow-hidden shadow-inner">
+                    <div
+                        className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 h-2 md:h-3 rounded-full transition-all duration-1000 ease-out shadow-sm"
+                        style={{ width: `${(step / 3) * 100}%` }}
+                    ></div>
+                  </div>
                 </div>
-                <div className="flex justify-between mt-2 text-xs text-gray-500">
-                  <span>Personal</span>
-                  <span>Travel</span>
-                  <span>Additional</span>
-                </div>
-              </div>
-            </div>
+              </Fade>
 
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              {step === 1 && (
-                  <Slide direction="right" triggerOnce>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                            <i className="bi bi-person-badge mr-2 text-teal-500"></i>
-                            Title *
-                          </label>
-                          <select
-                              name="title"
-                              value={formData.title}
-                              onChange={handleChange}
-                              className={`w-full p-3 rounded-lg border-2 ${
-                                  errors.title ? "border-red-300 focus:ring-red-400" : "border-gray-200 focus:ring-teal-400"
-                              } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
-                              required
-                          >
-                            <option value="" disabled>
-                              Select Title
-                            </option>
-                            <option value="Mr">Mr</option>
-                            <option value="Mrs">Mrs</option>
-                            <option value="Ms">Ms</option>
-                            <option value="Miss">Miss</option>
-                            <option value="Dr">Dr</option>
-                            <option value="Prof">Prof</option>
-                          </select>
-                          {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+              <form className="space-y-6 md:space-y-10" onSubmit={handleSubmit}>
+                {step === 1 && (
+                    <div className="space-y-6 md:space-y-8">
+                      <Fade delay={100} triggerOnce>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                          <div className="space-y-2 md:space-y-3">
+                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                              <span className="mr-2 text-blue-500 text-base md:text-lg">👤</span>
+                              Title *
+                            </label>
+                            <select
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 transition-all duration-300 ease-out cursor-pointer focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
+                                    errors.title ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50" : ""
+                                }`}
+                                required
+                            >
+                              <option value="" disabled>
+                                Select Your Title
+                              </option>
+                              <option value="Mr">Mr</option>
+                              <option value="Mrs">Mrs</option>
+                              <option value="Ms">Ms</option>
+                              <option value="Miss">Miss</option>
+                              <option value="Dr">Dr</option>
+                              <option value="Prof">Prof</option>
+                            </select>
+                            {errors.title && (
+                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                  <span className="mr-2 text-red-500">⚠️</span>
+                                  {errors.title}
+                                </p>
+                            )}
+                          </div>
+                          <div className="space-y-2 md:space-y-3">
+                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                              <span className="mr-2 text-blue-500 text-base md:text-lg">📝</span>
+                              Full Name *
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
+                                    errors.name ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50" : ""
+                                }`}
+                                placeholder="Enter your full name"
+                                required
+                            />
+                            {errors.name && (
+                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                  <span className="mr-2 text-red-500">⚠️</span>
+                                  {errors.name}
+                                </p>
+                            )}
+                          </div>
                         </div>
-
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                            <i className="bi bi-person mr-2 text-teal-500"></i>
-                            Full Name *
+                      </Fade>
+                      <Fade delay={200} triggerOnce>
+                        <div className="space-y-2 md:space-y-3">
+                          <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                            <span className="mr-2 text-blue-500 text-base md:text-lg">🌍</span>
+                            Nationality *
                           </label>
                           <input
                               type="text"
-                              name="name"
-                              value={formData.name}
+                              name="nationality"
+                              value={formData.nationality}
                               onChange={handleChange}
-                              className={`w-full p-3 rounded-lg border-2 ${
-                                  errors.name ? "border-red-300 focus:ring-red-400" : "border-gray-200 focus:ring-teal-400"
-                              } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
-                              placeholder="Your full name"
+                              className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
+                                  errors.nationality
+                                      ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
+                                      : ""
+                              }`}
+                              placeholder="Enter your nationality"
                               required
                           />
-                          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                          {errors.nationality && (
+                              <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                <span className="mr-2 text-red-500">⚠️</span>
+                                {errors.nationality}
+                              </p>
+                          )}
                         </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                          <i className="bi bi-globe mr-2 text-teal-500"></i>
-                          Nationality *
-                        </label>
-                        <input
-                            type="text"
-                            name="nationality"
-                            value={formData.nationality}
-                            onChange={handleChange}
-                            className={`w-full p-3 rounded-lg border-2 ${
-                                errors.nationality ? "border-red-300 focus:ring-red-400" : "border-gray-200 focus:ring-teal-400"
-                            } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
-                            placeholder="Your nationality"
-                            required
-                        />
-                        {errors.nationality && <p className="text-red-500 text-sm mt-1">{errors.nationality}</p>}
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                            <i className="bi bi-envelope mr-2 text-teal-500"></i>
-                            Email Address *
-                          </label>
-                          <input
-                              type="email"
-                              name="email"
-                              value={formData.email}
-                              onChange={handleChange}
-                              className={`w-full p-3 rounded-lg border-2 ${
-                                  errors.email ? "border-red-300 focus:ring-red-400" : "border-gray-200 focus:ring-teal-400"
-                              } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
-                              placeholder="your.email@example.com"
-                              required
-                          />
-                          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                      </Fade>
+                      <Fade delay={300} triggerOnce>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                          <div className="space-y-2 md:space-y-3">
+                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                              <span className="mr-2 text-blue-500 text-base md:text-lg">📧</span>
+                              Email Address *
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
+                                    errors.email ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50" : ""
+                                }`}
+                                placeholder="your.email@example.com"
+                                required
+                            />
+                            {errors.email && (
+                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                  <span className="mr-2 text-red-500">⚠️</span>
+                                  {errors.email}
+                                </p>
+                            )}
+                          </div>
+                          <div className="space-y-2 md:space-y-3">
+                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                              <span className="mr-2 text-blue-500 text-base md:text-lg">📞</span>
+                              Phone Number *
+                            </label>
+                            <input
+                                type="tel"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
+                                    errors.phone ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50" : ""
+                                }`}
+                                placeholder="+1 234 567 8900"
+                                required
+                            />
+                            {errors.phone && (
+                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                  <span className="mr-2 text-red-500">⚠️</span>
+                                  {errors.phone}
+                                </p>
+                            )}
+                          </div>
                         </div>
-
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                            <i className="bi bi-telephone mr-2 text-teal-500"></i>
-                            Phone Number *
-                          </label>
-                          <input
-                              type="tel"
-                              name="phone"
-                              value={formData.phone}
-                              onChange={handleChange}
-                              className={`w-full p-3 rounded-lg border-2 ${
-                                  errors.phone ? "border-red-300 focus:ring-red-400" : "border-gray-200 focus:ring-teal-400"
-                              } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
-                              placeholder="+1 234 567 8900"
-                              required
-                          />
-                          {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
-                        </div>
-                      </div>
+                      </Fade>
                     </div>
-                  </Slide>
-              )}
+                )}
 
-              {step === 2 && (
-                  <Slide direction="left" triggerOnce>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                            <i className="bi bi-calendar-date mr-2 text-teal-500"></i>
-                            Start Date *
+                {step === 2 && (
+                    <div className="space-y-6 md:space-y-8">
+                      <Fade delay={100} triggerOnce>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                          <div className="space-y-2 md:space-y-3">
+                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                              <span className="mr-2 text-blue-500 text-base md:text-lg">📅</span>
+                              Travel Start Date *
+                            </label>
+                            <input
+                                type="date"
+                                name="startDate"
+                                value={formData.startDate}
+                                onChange={handleChange}
+                                min={today}
+                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
+                                    errors.startDate
+                                        ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
+                                        : ""
+                                }`}
+                                required
+                            />
+                            {errors.startDate && (
+                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                  <span className="mr-2 text-red-500">⚠️</span>
+                                  {errors.startDate}
+                                </p>
+                            )}
+                            <p className="text-xs text-slate-500 mt-2 flex items-center">
+                              <span className="mr-1 text-slate-400">ℹ️</span>
+                              You can select from today onwards
+                            </p>
+                          </div>
+                          <div className="space-y-2 md:space-y-3">
+                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                              <span className="mr-2 text-blue-500 text-base md:text-lg">🌙</span>
+                              Number of Nights *
+                            </label>
+                            <input
+                                type="number"
+                                name="nights"
+                                value={formData.nights}
+                                onChange={handleChange}
+                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
+                                    errors.nights
+                                        ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
+                                        : ""
+                                }`}
+                                placeholder="7"
+                                min="1"
+                                max="365"
+                                required
+                            />
+                            {errors.nights && (
+                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                  <span className="mr-2 text-red-500">⚠️</span>
+                                  {errors.nights}
+                                </p>
+                            )}
+                          </div>
+                        </div>
+                      </Fade>
+                      <Fade delay={200} triggerOnce>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                          <div className="space-y-2 md:space-y-3">
+                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                              <span className="mr-2 text-blue-500 text-base md:text-lg">👥</span>
+                              Number of Adults *
+                            </label>
+                            <input
+                                type="number"
+                                name="adults"
+                                value={formData.adults}
+                                onChange={handleChange}
+                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
+                                    errors.adults
+                                        ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
+                                        : ""
+                                }`}
+                                placeholder="2"
+                                min="1"
+                                max="20"
+                                required
+                            />
+                            {errors.adults && (
+                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                  <span className="mr-2 text-red-500">⚠️</span>
+                                  {errors.adults}
+                                </p>
+                            )}
+                          </div>
+                          <div className="space-y-2 md:space-y-3">
+                            <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                              <span className="mr-2 text-blue-500 text-base md:text-lg">👶</span>
+                              Number of Children
+                            </label>
+                            <input
+                                type="number"
+                                name="children"
+                                value={formData.children}
+                                onChange={handleChange}
+                                className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
+                                    errors.children
+                                        ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
+                                        : ""
+                                }`}
+                                placeholder="0"
+                                min="0"
+                                max="20"
+                            />
+                            {errors.children && (
+                                <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                  <span className="mr-2 text-red-500">⚠️</span>
+                                  {errors.children}
+                                </p>
+                            )}
+                          </div>
+                        </div>
+                      </Fade>
+                      <Fade delay={300} triggerOnce>
+                        <div className="space-y-2 md:space-y-3">
+                          <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                            <span className="mr-2 text-blue-500 text-base md:text-lg">🏨</span>
+                            Type of Accommodation *
                           </label>
-                          <input
-                              type="date"
-                              name="startDate"
-                              value={formData.startDate}
+                          <select
+                              name="accommodation"
+                              value={formData.accommodation}
                               onChange={handleChange}
-                              className={`w-full p-3 rounded-lg border-2 ${
-                                  errors.startDate ? "border-red-300 focus:ring-red-400" : "border-gray-200 focus:ring-teal-400"
-                              } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
+                              className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 transition-all duration-300 ease-out cursor-pointer focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
+                                  errors.accommodation
+                                      ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
+                                      : ""
+                              }`}
                               required
-                          />
-                          {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>}
+                          >
+                            <option value="" disabled>
+                              Select accommodation type
+                            </option>
+                            <option value="5-star hotel">🏨 5 Star Luxury Hotel</option>
+                            <option value="4-star hotel">🏨 4 Star Hotel</option>
+                            <option value="3-star hotel">🏨 3 Star Hotel</option>
+                            <option value="luxury boutique">🏛️ Luxury Boutique Hotel</option>
+                            <option value="eco-lodge">🌿 Eco Lodge</option>
+                            <option value="wallet-friendly">💰 Budget Friendly</option>
+                          </select>
+                          {errors.accommodation && (
+                              <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                <span className="mr-2 text-red-500">⚠️</span>
+                                {errors.accommodation}
+                              </p>
+                          )}
                         </div>
-
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                            <i className="bi bi-moon mr-2 text-teal-500"></i>
-                            Number of Nights *
-                          </label>
-                          <input
-                              type="number"
-                              name="nights"
-                              value={formData.nights}
-                              onChange={handleChange}
-                              className={`w-full p-3 rounded-lg border-2 ${
-                                  errors.nights ? "border-red-300 focus:ring-red-400" : "border-gray-200 focus:ring-teal-400"
-                              } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
-                              placeholder="7"
-                              min="1"
-                              max="365"
-                              required
-                          />
-                          {errors.nights && <p className="text-red-500 text-sm mt-1">{errors.nights}</p>}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                            <i className="bi bi-people mr-2 text-teal-500"></i>
-                            Number of Adults *
-                          </label>
-                          <input
-                              type="number"
-                              name="adults"
-                              value={formData.adults}
-                              onChange={handleChange}
-                              className={`w-full p-3 rounded-lg border-2 ${
-                                  errors.adults ? "border-red-300 focus:ring-red-400" : "border-gray-200 focus:ring-teal-400"
-                              } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
-                              placeholder="2"
-                              min="1"
-                              max="20"
-                              required
-                          />
-                          {errors.adults && <p className="text-red-500 text-sm mt-1">{errors.adults}</p>}
-                        </div>
-
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                            <i className="bi bi-person-hearts mr-2 text-teal-500"></i>
-                            Number of Children
-                          </label>
-                          <input
-                              type="number"
-                              name="children"
-                              value={formData.children}
-                              onChange={handleChange}
-                              className={`w-full p-3 rounded-lg border-2 ${
-                                  errors.children ? "border-red-300 focus:ring-red-400" : "border-gray-200 focus:ring-teal-400"
-                              } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
-                              placeholder="0"
-                              min="0"
-                              max="20"
-                          />
-                          {errors.children && <p className="text-red-500 text-sm mt-1">{errors.children}</p>}
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                          <i className="bi bi-building mr-2 text-teal-500"></i>
-                          Type of Accommodation *
-                        </label>
-                        <select
-                            name="accommodation"
-                            value={formData.accommodation}
-                            onChange={handleChange}
-                            className={`w-full p-3 rounded-lg border-2 ${
-                                errors.accommodation
-                                    ? "border-red-300 focus:ring-red-400"
-                                    : "border-gray-200 focus:ring-teal-400"
-                            } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
-                            required
-                        >
-                          <option value="" disabled>
-                            Select accommodation type
-                          </option>
-                          <option value="5-star hotel">5 Star Luxury Hotel</option>
-                          <option value="4-star hotel">4 Star Hotel</option>
-                          <option value="3-star hotel">3 Star Hotel</option>
-                          <option value="luxury boutique">Luxury Boutique Hotel</option>
-                          <option value="eco-lodge">Eco Lodge</option>
-                          <option value="wallet-friendly">Budget Friendly</option>
-                        </select>
-                        {errors.accommodation && <p className="text-red-500 text-sm mt-1">{errors.accommodation}</p>}
-                      </div>
+                      </Fade>
                     </div>
-                  </Slide>
-              )}
+                )}
 
-              {step === 3 && (
-                  <Slide direction="up" triggerOnce>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                          <i className="bi bi-chat-square-text mr-2 text-teal-500"></i>
-                          Special Requests or Notes
-                        </label>
-                        <textarea
-                            name="specialNote"
-                            value={formData.specialNote}
-                            onChange={handleChange}
-                            rows={4}
-                            className="w-full p-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all duration-300 resize-none"
-                            placeholder="Any dietary requirements, accessibility needs, or special occasions..."
-                        ></textarea>
-                      </div>
-
-                      <div>
-                        <label className="block text-gray-700 font-medium mb-2 flex items-center">
-                          <i className="bi bi-question-circle mr-2 text-teal-500"></i>
-                          How did you hear about us? *
-                        </label>
-                        <select
-                            name="hearAboutUs"
-                            value={formData.hearAboutUs}
-                            onChange={handleChange}
-                            className={`w-full p-3 rounded-lg border-2 ${
-                                errors.hearAboutUs ? "border-red-300 focus:ring-red-400" : "border-gray-200 focus:ring-teal-400"
-                            } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
-                            required
-                        >
-                          <option value="" disabled>
-                            Select an option
-                          </option>
-                          <option value="google">Google Search</option>
-                          <option value="facebook">Facebook</option>
-                          <option value="instagram">Instagram</option>
-                          <option value="twitter">Twitter</option>
-                          <option value="trip-advisor">TripAdvisor</option>
-                          <option value="friend-family">Friend or Family Recommendation</option>
-                          <option value="travel-blog">Travel Blog</option>
-                          <option value="other">Other</option>
-                        </select>
-                        {errors.hearAboutUs && <p className="text-red-500 text-sm mt-1">{errors.hearAboutUs}</p>}
-                      </div>
-
+                {step === 3 && (
+                    <div className="space-y-6 md:space-y-8">
+                      <Fade delay={100} triggerOnce>
+                        <div className="space-y-2 md:space-y-3">
+                          <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                            <span className="mr-2 text-blue-500 text-base md:text-lg">💬</span>
+                            Special Requests or Notes
+                          </label>
+                          <textarea
+                              name="specialNote"
+                              value={formData.specialNote}
+                              onChange={handleChange}
+                              rows={4}
+                              className="w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out resize-none focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm"
+                              placeholder="Any dietary requirements, accessibility needs, special occasions, or other requests..."
+                          ></textarea>
+                        </div>
+                      </Fade>
+                      <Fade delay={200} triggerOnce>
+                        <div className="space-y-2 md:space-y-3">
+                          <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase flex items-center">
+                            <span className="mr-2 text-blue-500 text-base md:text-lg">❓</span>
+                            How did you hear about us? *
+                          </label>
+                          <CustomSelect
+                              options={hearAboutUsOptions}
+                              value={formData.hearAboutUs}
+                              onChange={(value) => handleCustomSelectChange("hearAboutUs", value)}
+                              placeholder="Select an option"
+                              error={errors.hearAboutUs}
+                              required
+                          />
+                          {errors.hearAboutUs && (
+                              <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                <span className="mr-2 text-red-500">⚠️</span>
+                                {errors.hearAboutUs}
+                              </p>
+                          )}
+                        </div>
+                      </Fade>
                       {formData.hearAboutUs === "other" && (
-                          <Fade triggerOnce>
-                            <div>
-                              <label className="block text-gray-700 font-medium mb-2">Please specify</label>
+                          <Fade delay={300} triggerOnce>
+                            <div className="space-y-2 md:space-y-3">
+                              <label className="block text-slate-700 font-semibold text-xs md:text-sm tracking-wide uppercase">
+                                Please specify
+                              </label>
                               <input
                                   type="text"
                                   name="otherDetails"
                                   value={formData.otherDetails}
                                   onChange={handleChange}
-                                  className={`w-full p-3 rounded-lg border-2 ${
+                                  className={`w-full px-3 py-3 md:px-4 md:py-4 rounded-lg md:rounded-xl border-2 border-slate-200 bg-white/80 backdrop-blur-sm font-medium text-slate-800 placeholder-slate-400 transition-all duration-300 ease-out focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:bg-white hover:border-slate-300 hover:shadow-sm shadow-sm ${
                                       errors.otherDetails
-                                          ? "border-red-300 focus:ring-red-400"
-                                          : "border-gray-200 focus:ring-teal-400"
-                                  } focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
+                                          ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 bg-red-50/50"
+                                          : ""
+                                  }`}
                                   placeholder="Please tell us how you found us"
                               />
-                              {errors.otherDetails && <p className="text-red-500 text-sm mt-1">{errors.otherDetails}</p>}
+                              {errors.otherDetails && (
+                                  <p className="text-red-500 text-xs md:text-sm mt-2 flex items-center font-medium">
+                                    <span className="mr-2 text-red-500">⚠️</span>
+                                    {errors.otherDetails}
+                                  </p>
+                              )}
                             </div>
                           </Fade>
                       )}
                     </div>
-                  </Slide>
-              )}
-
-              {/* Navigation buttons */}
-              <div className="flex justify-between items-center pt-6 border-t border-gray-200">
-                {step > 1 ? (
-                    <button
-                        type="button"
-                        onClick={handleBack}
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-all duration-300 flex items-center space-x-2"
-                        disabled={isSubmitting}
-                    >
-                      <i className="bi bi-arrow-left"></i>
-                      <span>Back</span>
-                    </button>
-                ) : (
-                    <div></div>
                 )}
 
-                <div className="flex items-center space-x-3">
-                  {step < 3 ? (
-                      <button
-                          type="button"
-                          onClick={handleNext}
-                          className="bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 flex items-center space-x-2"
-                          disabled={isSubmitting}
-                      >
-                        <span>Next Step</span>
-                        <i className="bi bi-arrow-right"></i>
-                      </button>
-                  ) : (
-                      <button
-                          type="submit"
-                          className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                              <span>Submitting...</span>
-                            </>
-                        ) : (
-                            <>
-                              <i className="bi bi-check-circle"></i>
-                              <span>Submit Booking</span>
-                            </>
-                        )}
-                      </button>
-                  )}
-                </div>
-              </div>
-              {/* Quick Response Guarantee */}
-              <Fade delay={400} triggerOnce>
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-6 border border-yellow-200">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i className="bi bi-info-circle text-white text-xl"></i>
+                {/* Navigation Buttons */}
+                <Fade delay={400} triggerOnce>
+                  <div className="flex flex-col sm:flex-row justify-between items-center pt-8 md:pt-12 border-t border-slate-200 space-y-4 sm:space-y-0">
+                    {step > 1 ? (
+                        <button
+                            type="button"
+                            onClick={handleBack}
+                            className="w-full sm:w-auto font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg md:rounded-xl shadow-lg transform transition-all duration-300 focus:outline-none focus:ring-4 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3 bg-gradient-to-r from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 text-slate-700 hover:shadow-lg hover:scale-105 focus:ring-slate-300/50"
+                            disabled={isSubmitting}
+                        >
+                          <span>←</span>
+                          <span>Previous Step</span>
+                        </button>
+                    ) : (
+                        <div></div>
+                    )}
+                    <div className="flex items-center space-x-4">
+                      {step < 3 ? (
+                          <button
+                              type="button"
+                              onClick={handleNext}
+                              className="w-full sm:w-auto font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg md:rounded-xl shadow-lg transform transition-all duration-300 focus:outline-none focus:ring-4 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white hover:shadow-xl hover:scale-105 focus:ring-blue-500/50 shadow-blue-500/25"
+                              disabled={isSubmitting}
+                          >
+                            <span>Continue</span>
+                            <span>→</span>
+                          </button>
+                      ) : (
+                          <button
+                              type="submit"
+                              className="w-full sm:w-auto font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg md:rounded-xl shadow-lg transform transition-all duration-300 focus:outline-none focus:ring-4 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white hover:shadow-xl hover:scale-105 focus:ring-blue-500/50 shadow-blue-500/25"
+                              disabled={isSubmitting}
+                          >
+                            {isSubmitting ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-b-2 border-white"></div>
+                                  <span>Submitting...</span>
+                                </>
+                            ) : (
+                                <>
+                                  <span>✓</span>
+                                  <span>Submit Booking</span>
+                                </>
+                            )}
+                          </button>
+                      )}
+                    </div>
+                  </div>
+                </Fade>
+
+                {/* Quick Response Guarantee */}
+                <Fade delay={500} triggerOnce>
+                  <div className="bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 rounded-2xl md:rounded-3xl p-4 md:p-8 border border-amber-200/50 shadow-lg mt-8 md:mt-12">
+                    <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-6">
+                      <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl md:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg text-xl md:text-2xl">
+                        ⚡
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-bold text-gray-900 mb-2 flex items-center">
-                          <i className="bi bi-lightning-charge text-yellow-600 mr-2"></i>
+                        <h4 className="text-xl md:text-2xl font-bold text-slate-900 mb-2 md:mb-4 flex items-center">
+                          <span className="mr-2 md:mr-3 text-amber-600">🏆</span>
                           Quick Response Guarantee
                         </h4>
-                        <p className="text-sm text-gray-700 mb-4">
+                        <p className="text-slate-700 mb-4 md:mb-6 text-base md:text-lg leading-relaxed">
                           We respond to all inquiries within{" "}
-                          <span className="font-semibold text-orange-600">2 hours during business hours</span>, and within{" "}
-                          <span className="font-semibold text-orange-600">24 hours on weekends</span>. Your dream vacation
-                          planning starts immediately!
+                          <span className="font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-lg">
+                          2 hours during business hours
+                        </span>
+                          , and within{" "}
+                          <span className="font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-lg">
+                          24 hours on weekends
+                        </span>
+                          . Your dream vacation planning starts immediately!
                         </p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="flex items-center space-x-2 text-sm text-gray-600">
-                            <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
-                              <i className="bi bi-clock text-teal-600"></i>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                          <div className="flex items-center space-x-3 md:space-x-4 bg-white/60 rounded-xl md:rounded-2xl p-3 md:p-4 shadow-sm">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-teal-100 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-xl">
+                              🕐
                             </div>
                             <div>
-                              <div className="font-semibold text-gray-900">Business Hours</div>
-                              <div className="text-xs">Mon-Fri: 8AM-8PM</div>
+                              <div className="font-bold text-slate-900 text-base md:text-lg">Business Hours</div>
+                              <div className="text-slate-600 text-sm md:text-base">Mon-Fri: 8AM-8PM</div>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2 text-sm text-gray-600">
-                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <i className="bi bi-calendar text-blue-600"></i>
+                          <div className="flex items-center space-x-3 md:space-x-4 bg-white/60 rounded-xl md:rounded-2xl p-3 md:p-4 shadow-sm">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-xl">
+                              📅
                             </div>
                             <div>
-                              <div className="font-semibold text-gray-900">Weekends</div>
-                              <div className="text-xs">Sat-Sun: 9AM-6PM</div>
+                              <div className="font-bold text-slate-900 text-base md:text-lg">Weekends</div>
+                              <div className="text-slate-600 text-sm md:text-base">Sat-Sun: 9AM-6PM</div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Fade>
-            </form>
-          </div>
-        </Fade>
+                </Fade>
+              </form>
+            </div>
+          </Fade>
+        </div>
       </div>
   )
 }
