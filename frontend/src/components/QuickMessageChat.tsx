@@ -32,10 +32,10 @@ const QuickMessageChat: React.FC<QuickMessageChatProps> = ({ isOpen, onToggle })
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
 
-  // Check if device is mobile
+  // Check if device is mobile/tablet
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+      setIsMobile(window.innerWidth < 1024) // Using 1024px as breakpoint for desktop
     }
 
     checkMobile()
@@ -148,7 +148,9 @@ const QuickMessageChat: React.FC<QuickMessageChatProps> = ({ isOpen, onToggle })
           message: "",
         })
         setIsSuccess(false)
-        onToggle() // Close the form
+        if (isMobile) {
+          onToggle() // Close the modal on mobile
+        }
       }, 3000)
     } catch (error) {
       console.error(error)
@@ -170,13 +172,9 @@ const QuickMessageChat: React.FC<QuickMessageChatProps> = ({ isOpen, onToggle })
   }
 
   const handleClose = () => {
-    if (isMobile) {
+    setIsVisible(false)
+    if (isOpen) {
       onToggle()
-    } else {
-      setIsVisible(false)
-      if (isOpen) {
-        onToggle()
-      }
     }
   }
 
@@ -190,35 +188,35 @@ const QuickMessageChat: React.FC<QuickMessageChatProps> = ({ isOpen, onToggle })
     }
   }
 
-  // Mobile: Show floating button when not open, full-screen modal when open
+  // Mobile/Tablet: Show floating button when not open, full-screen modal when open
   if (isMobile) {
     return (
       <>
-        {/* Floating Chat Button - Mobile Only */}
+        {/* Floating Chat Button - Mobile/Tablet Only - Now at bottom position */}
         {!isOpen && (
-          <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50">
+          <div className="fixed bottom-4 right-4 z-40">
             <button
               onClick={onToggle}
-              className="w-14 h-14 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-110 flex items-center justify-center group active:scale-95"
+              className="w-12 h-12 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-110 flex items-center justify-center group active:scale-95"
               aria-label="Open chat"
             >
-              <i className="bi bi-chat-dots text-xl group-hover:animate-pulse"></i>
+              <i className="bi bi-chat-dots text-lg group-hover:animate-pulse"></i>
 
               {/* Notification Badge */}
-              <div className="absolute -top-1 -left-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+              <div className="absolute -top-1 -left-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
                 <span className="text-xs font-bold text-white">1</span>
               </div>
 
-              {/* Side Label */}
-              <div className="absolute right-full mr-3 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+              {/* Floating Label */}
+              <div className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                 Chat with us
-                <div className="absolute left-full top-1/2 transform translate-y-[-50%] w-0 h-0 border-t-4 border-b-4 border-l-4 border-transparent border-l-gray-900"></div>
+                <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-4 border-transparent border-l-gray-900"></div>
               </div>
             </button>
           </div>
         )}
 
-        {/* Full Screen Modal - Mobile Only */}
+        {/* Full Screen Modal - Mobile/Tablet Only */}
         {isOpen && (
           <div
             className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
@@ -442,27 +440,27 @@ const QuickMessageChat: React.FC<QuickMessageChatProps> = ({ isOpen, onToggle })
     )
   }
 
-  // Desktop: Show chat dock at bottom left (existing behavior)
+  // Desktop: Show chat dock at bottom right (visible by default)
   // If chat is hidden, show only a small floating button to restore it
   if (!isVisible) {
     return (
-      <div className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50">
+      <div className="fixed bottom-4 right-4 z-40">
         <button
           onClick={handleShow}
-          className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-110 flex items-center justify-center group active:scale-95"
+          className="w-12 h-12 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-110 flex items-center justify-center group active:scale-95"
           aria-label="Open chat"
         >
-          <i className="bi bi-chat-dots text-xl sm:text-2xl group-hover:animate-pulse"></i>
+          <i className="bi bi-chat-dots text-lg group-hover:animate-pulse"></i>
 
           {/* Notification Badge */}
-          <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-            <span className="text-xs sm:text-sm font-bold text-white">1</span>
+          <div className="absolute -top-1 -left-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+            <span className="text-xs font-bold text-white">1</span>
           </div>
 
           {/* Floating Label */}
-          <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+          <div className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
             Chat with us
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-4 border-transparent border-l-gray-900"></div>
           </div>
         </button>
       </div>
@@ -470,7 +468,7 @@ const QuickMessageChat: React.FC<QuickMessageChatProps> = ({ isOpen, onToggle })
   }
 
   return (
-    <div className="fixed bottom-0 left-4 sm:left-6 z-50">
+    <div className="fixed bottom-0 right-4 z-40">
       {/* Chat Window - Desktop Only */}
       <div
         className={`mb-0 bg-white shadow-2xl border border-gray-300 transition-all duration-300 ease-in-out transform origin-bottom ${
@@ -478,7 +476,7 @@ const QuickMessageChat: React.FC<QuickMessageChatProps> = ({ isOpen, onToggle })
         }`}
         style={{
           width: "380px",
-          height: isOpen ? "550px" : "0px",
+          height: isOpen ? "580px" : "0px",
           borderRadius: "16px 16px 0 0",
           borderBottom: "none",
         }}
@@ -724,7 +722,7 @@ const QuickMessageChat: React.FC<QuickMessageChatProps> = ({ isOpen, onToggle })
         </div>
       </div>
 
-      {/* Chat Tab Button - Desktop Only */}
+      {/* Chat Tab Button - Desktop Only (Always visible by default) */}
       <div
         className={`bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 shadow-xl cursor-pointer transition-all duration-300 ${
           isOpen ? "rounded-none" : "rounded-t-2xl hover:shadow-2xl hover:scale-105"
@@ -755,17 +753,32 @@ const QuickMessageChat: React.FC<QuickMessageChatProps> = ({ isOpen, onToggle })
             </div>
           </div>
 
-          {/* Notification Badge and Animation */}
-          {!isOpen && (
-            <div className="flex items-center space-x-2 flex-shrink-0">
-              <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center animate-bounce">
-                <span className="text-xs font-bold text-white">1</span>
-              </div>
-              <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
-                <i className="bi bi-chevron-up text-white text-sm animate-bounce"></i>
-              </div>
-            </div>
-          )}
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            {/* Notification Badge and Animation */}
+            {!isOpen && (
+              <>
+                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center animate-bounce">
+                  <span className="text-xs font-bold text-white">1</span>
+                </div>
+                <div className="w-7 h-7 bg-white/10 rounded-full flex items-center justify-center">
+                  <i className="bi bi-chevron-up text-white text-sm animate-bounce"></i>
+                </div>
+              </>
+            )}
+
+            {/* Close Button - Always visible */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                handleClose()
+              }}
+              className="w-7 h-7 rounded-full bg-white/10 hover:bg-red-500/80 backdrop-blur-sm flex items-center justify-center text-white hover:text-white transition-all duration-200 active:scale-95"
+              aria-label="Close chat dock"
+            >
+              <i className="bi bi-x text-sm font-bold"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
