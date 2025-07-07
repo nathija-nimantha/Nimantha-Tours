@@ -6,25 +6,25 @@ import QuickMessageForm from "./QuickMessageForm"
 import QuickMessageChat from "./QuickMessageChat"
 
 const FloatingActions: React.FC = () => {
-    const [isMessageFormOpen, setIsMessageFormOpen] = useState<boolean>(false)
-    const [isChatOpen, setIsChatOpen] = useState<boolean>(false)
+  const [isMessageFormOpen, setIsMessageFormOpen] = useState<boolean>(false)
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(false)
 
-    const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        })
-    }
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
 
-    return (
-        <>
-            {/* Quick Message Form Modal */}
-            <QuickMessageForm isOpen={isMessageFormOpen} onClose={() => setIsMessageFormOpen(false)} />
+  return (
+    <>
+      {/* Quick Message Form Modal */}
+      <QuickMessageForm isOpen={isMessageFormOpen} onClose={() => setIsMessageFormOpen(false)} />
 
-            {/* Quick Message Chat - Right Side Only */}
-            <QuickMessageChat isOpen={isChatOpen} onToggle={() => setIsChatOpen(!isChatOpen)} />
-        </>
-    )
+      {/* Quick Message Chat - Left Bottom Only */}
+      <QuickMessageChat isOpen={isChatOpen} onToggle={() => setIsChatOpen(!isChatOpen)} />
+    </>
+  )
 }
 
 export default FloatingActions
