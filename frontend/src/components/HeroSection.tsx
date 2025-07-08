@@ -46,11 +46,11 @@ const HeroSection = ({ backgroundImage }: HeroSectionProps) => {
 
       <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div
-          className={`text-center text-white max-w-4xl mx-auto transition-all duration-1000 ${
+          className={`text-center text-white max-w-6xl mx-auto transition-all duration-1000 ${
             isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <h1 className="heading-primary mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight">
             <span className="block animate-fadeInUp">Welcome to</span>
             <span
               className="block bg-gradient-to-r from-teal-400 via-blue-500 to-purple-600 bg-clip-text text-transparent animate-fadeInUp"
@@ -61,7 +61,7 @@ const HeroSection = ({ backgroundImage }: HeroSectionProps) => {
           </h1>
 
           <p
-            className="text-body mb-8 animate-fadeInUp opacity-90 max-w-3xl mx-auto"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 animate-fadeInUp opacity-90 max-w-4xl mx-auto leading-relaxed px-4"
             style={{ animationDelay: "0.6s" }}
           >
             Explore the beauty of Sri Lanka with us. Your dream journey starts here with unforgettable experiences and
@@ -69,20 +69,26 @@ const HeroSection = ({ backgroundImage }: HeroSectionProps) => {
           </p>
 
           <div
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fadeInUp"
+            className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center animate-fadeInUp px-4"
             style={{ animationDelay: "0.9s" }}
           >
-            <Link to="/booking" className="btn-primary w-full sm:w-auto min-w-[200px] text-center group">
+            <Link
+              to="/booking"
+              className="w-full sm:w-auto bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-full shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl min-w-[200px] text-center group"
+            >
               <span className="flex items-center justify-center space-x-2">
                 <i className="bi bi-calendar-check text-lg group-hover:animate-bounce"></i>
-                <span>Book Your Adventure</span>
+                <span className="text-sm sm:text-base">Book Your Adventure</span>
               </span>
             </Link>
 
-            <Link to="/featuredTours" className="btn-secondary w-full sm:w-auto min-w-[200px] text-center group">
+            <Link
+              to="/featuredTours"
+              className="w-full sm:w-auto bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-full shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl min-w-[200px] text-center group"
+            >
               <span className="flex items-center justify-center space-x-2">
                 <i className="bi bi-compass text-lg group-hover:animate-spin"></i>
-                <span>Explore Tours</span>
+                <span className="text-sm sm:text-base">Explore Tours</span>
               </span>
             </Link>
           </div>
@@ -91,7 +97,7 @@ const HeroSection = ({ backgroundImage }: HeroSectionProps) => {
 
       {/* Modern scroll indicator */}
       <div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce-custom cursor-pointer z-20"
+        className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer z-20"
         onClick={scrollToContent}
         role="button"
         tabIndex={0}
