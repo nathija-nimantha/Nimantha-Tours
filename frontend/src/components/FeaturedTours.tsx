@@ -63,19 +63,6 @@ const FeaturedTours: React.FC = () => {
     }
   }, [isAutoScrolling, isDragging])
 
-  const scroll = (direction: "left" | "right"): void => {
-    setIsAutoScrolling(false)
-    if (scrollContainerRef.current) {
-      const scrollAmount = scrollContainerRef.current.clientWidth * 0.8
-      scrollContainerRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      })
-    }
-
-    setTimeout(() => setIsAutoScrolling(true), 10000)
-  }
-
   // Mouse drag functionality (desktop only)
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -259,27 +246,6 @@ const FeaturedTours: React.FC = () => {
         )}
 
         <div className="relative">
-          {/* Navigation Buttons - show for mobile/tablet */}
-          {isMobile && (
-            <>
-              <button
-                onClick={() => scroll("left")}
-                className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm text-gray-800 p-2 sm:p-3 lg:p-4 rounded-full shadow-xl z-20 hover:bg-white hover:scale-110 transition-all duration-300 flex items-center justify-center group"
-                aria-label="Scroll Left"
-              >
-                <i className="bi bi-chevron-left text-lg sm:text-xl group-hover:animate-pulse"></i>
-              </button>
-
-              <button
-                onClick={() => scroll("right")}
-                className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm text-gray-800 p-2 sm:p-3 lg:p-4 rounded-full shadow-xl z-20 hover:bg-white hover:scale-110 transition-all duration-300 flex items-center justify-center group"
-                aria-label="Scroll Right"
-              >
-                <i className="bi bi-chevron-right text-lg sm:text-xl group-hover:animate-pulse"></i>
-              </button>
-            </>
-          )}
-
           <div
             ref={scrollContainerRef}
             className={`flex space-x-4 sm:space-x-6 snap-x snap-mandatory overflow-x-auto pb-4 scrollbar-hide ${
@@ -288,13 +254,11 @@ const FeaturedTours: React.FC = () => {
             onMouseDown={!isMobile ? handleMouseDown : undefined}
             onMouseMove={!isMobile ? handleMouseMove : undefined}
             onMouseUp={!isMobile ? handleMouseUp : undefined}
-            onMouseEnter={() => setIsAutoScrolling(false)}
-            onMouseLeave={(e) => {
-              if (!isMobile && handleMouseLeave) {
-                handleMouseLeave()
-              }
+            onMouseLeave={() => {
+              if (!isMobile && handleMouseLeave) handleMouseLeave()
               setIsAutoScrolling(true)
             }}
+            onMouseEnter={() => setIsAutoScrolling(false)}
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
