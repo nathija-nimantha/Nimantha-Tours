@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect, useState, useCallback } from "react"
 
 interface Tour {
   title: string
@@ -16,11 +16,33 @@ interface Tour {
 const FeaturedTours: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const [isAutoScrolling, setIsAutoScrolling] = useState<boolean>(true)
+  const [isDragging, setIsDragging] = useState<boolean>(false)
+  const [startX, setStartX] = useState<number>(0)
+  const [scrollLeft, setScrollLeft] = useState<number>(0)
+  const [dragStartTime, setDragStartTime] = useState<number>(0)
+  const [dragDistance, setDragDistance] = useState<number>(0)
+  const [isMobile, setIsMobile] = useState<boolean>(false)
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      const userAgent = navigator.userAgent.toLowerCase()
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)
+      const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0
+      const isSmallScreen = window.innerWidth <= 1024
+
+      setIsMobile(isMobileDevice || (isTouchDevice && isSmallScreen))
+    }
+
+    checkIsMobile()
+    window.addEventListener("resize", checkIsMobile)
+
+    return () => window.removeEventListener("resize", checkIsMobile)
+  }, [])
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>
 
-    if (isAutoScrolling) {
+    if (isAutoScrolling && !isDragging) {
       interval = setInterval(() => {
         if (scrollContainerRef.current) {
           const container = scrollContainerRef.current
@@ -38,27 +60,87 @@ const FeaturedTours: React.FC = () => {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [isAutoScrolling])
+  }, [isAutoScrolling, isDragging])
 
-  const scroll = (direction: "left" | "right"): void => {
-    setIsAutoScrolling(false)
-    if (scrollContainerRef.current) {
-      const scrollAmount = scrollContainerRef.current.clientWidth * 0.8
-      scrollContainerRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      })
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (isMobile || !scrollContainerRef.current) return
+
+      setIsDragging(true)
+      setIsAutoScrolling(false)
+      setStartX(e.pageX - scrollContainerRef.current.offsetLeft)
+      setScrollLeft(scrollContainerRef.current.scrollLeft)
+      setDragStartTime(Date.now())
+      setDragDistance(0)
+
+      scrollContainerRef.current.style.cursor = "grabbing"
+      scrollContainerRef.current.style.userSelect = "none"
+    },
+    [isMobile],
+  )
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (isMobile || !isDragging || !scrollContainerRef.current) return
+
+      e.preventDefault()
+      const x = e.pageX - scrollContainerRef.current.offsetLeft
+      const walk = (x - startX) * 2
+      const newScrollLeft = scrollLeft - walk
+
+      scrollContainerRef.current.scrollLeft = newScrollLeft
+      setDragDistance(Math.abs(walk))
+    },
+    [isMobile, isDragging, startX, scrollLeft],
+  )
+
+  const handleMouseUp = useCallback(() => {
+    if (isMobile || !scrollContainerRef.current) return
+
+    setIsDragging(false)
+    scrollContainerRef.current.style.cursor = "grab"
+    scrollContainerRef.current.style.userSelect = "auto"
+
+    const dragDuration = Date.now() - dragStartTime
+    if (dragDistance < 50 && dragDuration < 200) {
+      setTimeout(() => setIsAutoScrolling(true), 3000)
+    } else {
+      setTimeout(() => setIsAutoScrolling(true), 8000)
     }
+  }, [isMobile, dragStartTime, dragDistance])
 
-    setTimeout(() => setIsAutoScrolling(true), 10000)
-  }
+  const handleMouseLeave = useCallback(() => {
+    if (isMobile) return
+
+    if (isDragging) {
+      handleMouseUp()
+    }
+  }, [isMobile, isDragging, handleMouseUp])
+
+  const handleCardClick = useCallback(
+    (e: React.MouseEvent, link: string) => {
+      if (isMobile) {
+        window.location.href = link
+        return
+      }
+
+      const dragDuration = Date.now() - dragStartTime
+      if (dragDistance > 10 || dragDuration > 300) {
+        e.preventDefault()
+        return
+      }
+
+      window.location.href = link
+    },
+    [isMobile, dragStartTime, dragDistance],
+  )
 
   const tours: Tour[] = [
     {
       title: "Sigiriya",
       img: "/src/assets/img/card-Sigiriya.jpg",
       description: "Ancient rock fortress with stunning panoramic views and fascinating frescoes.",
-      link: "/attractions/sigiriya",
+      link: "/tours/sigiriya",
       duration: "Full Day",
       difficulty: "Moderate",
       highlights: ["Ancient Frescoes", "Lion's Gate", "Summit Views"],
@@ -67,7 +149,7 @@ const FeaturedTours: React.FC = () => {
       title: "Ella",
       img: "/src/assets/img/card-Ella.jpg",
       description: "Scenic highlands with lush tea plantations and breathtaking mountain views.",
-      link: "/attractions/ella",
+      link: "/tours/ella",
       duration: "2-3 Days",
       difficulty: "Easy",
       highlights: ["Nine Arch Bridge", "Little Adam's Peak", "Tea Factories"],
@@ -76,7 +158,7 @@ const FeaturedTours: React.FC = () => {
       title: "Kandy",
       img: "/src/assets/img/card-Kandy.jpg",
       description: "Cultural capital with the sacred Temple of the Tooth Relic.",
-      link: "/attractions/kandy",
+      link: "/tours/kandy",
       duration: "Full Day",
       difficulty: "Easy",
       highlights: ["Temple of Tooth", "Royal Botanical Gardens", "Cultural Shows"],
@@ -85,7 +167,7 @@ const FeaturedTours: React.FC = () => {
       title: "Galle",
       img: "/src/assets/img/card-Galle.jpg",
       description: "Historic fortified city with well-preserved Dutch colonial architecture.",
-      link: "/attractions/galle",
+      link: "/tours/galle",
       duration: "Half Day",
       difficulty: "Easy",
       highlights: ["Galle Fort", "Lighthouse", "Colonial Architecture"],
@@ -94,7 +176,7 @@ const FeaturedTours: React.FC = () => {
       title: "Nuwara Eliya",
       img: "/src/assets/img/card-NuwaraEliya.jpg",
       description: "Known as 'Little England' for its cool climate and pristine tea plantations.",
-      link: "/attractions/nuwara-eliya",
+      link: "/tours/nuwara-eliya",
       duration: "1-2 Days",
       difficulty: "Easy",
       highlights: ["Tea Plantations", "Gregory Lake", "Strawberry Fields"],
@@ -103,7 +185,7 @@ const FeaturedTours: React.FC = () => {
       title: "Yala National Park",
       img: "/src/assets/img/card-Yala.jpg",
       description: "Premier wildlife reserve famous for leopards, elephants, and diverse fauna.",
-      link: "/attractions/yala",
+      link: "/tours/yala",
       duration: "Full Day",
       difficulty: "Easy",
       highlights: ["Leopard Spotting", "Elephant Herds", "Bird Watching"],
@@ -125,7 +207,6 @@ const FeaturedTours: React.FC = () => {
 
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-      {/* Background decorations */}
       <div className="absolute top-0 left-0 w-36 h-36 sm:w-48 sm:h-48 lg:w-72 lg:h-72 bg-gradient-to-br from-teal-100 to-blue-100 rounded-full opacity-30 -translate-x-18 sm:-translate-x-24 lg:-translate-x-36 -translate-y-18 sm:-translate-y-24 lg:-translate-y-36"></div>
       <div className="absolute bottom-0 right-0 w-48 h-48 sm:w-64 sm:h-64 lg:w-96 lg:h-96 bg-gradient-to-tl from-orange-100 to-yellow-100 rounded-full opacity-30 translate-x-24 sm:translate-x-32 lg:translate-x-48 translate-y-24 sm:translate-y-32 lg:translate-y-48"></div>
 
@@ -146,21 +227,30 @@ const FeaturedTours: React.FC = () => {
           </p>
         </div>
 
-        <div className="relative">
-          {/* Navigation Buttons */}
-          <button
-            onClick={() => scroll("left")}
-            className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm text-gray-800 p-2 sm:p-3 lg:p-4 rounded-full shadow-xl z-20 hover:bg-white hover:scale-110 transition-all duration-300 hidden md:flex items-center justify-center group"
-            aria-label="Scroll Left"
-          >
-            <i className="bi bi-chevron-left text-lg sm:text-xl group-hover:animate-pulse"></i>
-          </button>
+        {!isMobile && (
+          <div className="text-center mb-6">
+            <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
+              <i className="bi bi-mouse"></i>
+              <span>Click and drag to scroll</span>
+              <i className="bi bi-arrow-left-right"></i>
+            </p>
+          </div>
+        )}
 
+        <div className="relative">
           <div
             ref={scrollContainerRef}
-            className="flex space-x-4 sm:space-x-6 snap-x snap-mandatory overflow-x-auto pb-4 scrollbar-hide"
+            className={`flex space-x-4 sm:space-x-6 snap-x snap-mandatory overflow-x-auto pb-4 scrollbar-hide ${
+              !isMobile ? "cursor-grab active:cursor-grabbing select-none" : ""
+            }`}
+            onMouseDown={!isMobile ? handleMouseDown : undefined}
+            onMouseMove={!isMobile ? handleMouseMove : undefined}
+            onMouseUp={!isMobile ? handleMouseUp : undefined}
+            onMouseLeave={() => {
+              if (!isMobile && handleMouseLeave) handleMouseLeave()
+              setIsAutoScrolling(true)
+            }}
             onMouseEnter={() => setIsAutoScrolling(false)}
-            onMouseLeave={() => setIsAutoScrolling(true)}
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
@@ -169,15 +259,17 @@ const FeaturedTours: React.FC = () => {
             {tours.map((tour, index) => (
               <div
                 key={index}
-                className="snap-start flex-none w-72 sm:w-80 lg:w-96 bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group"
+                className="snap-start flex-none w-72 sm:w-80 lg:w-96 bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer"
                 style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={(e) => handleCardClick(e, tour.link)}
               >
                 <div className="relative overflow-hidden">
                   <img
                     src={tour.img || "/placeholder.svg"}
                     alt={tour.title}
-                    className="w-full h-48 sm:h-52 lg:h-56 object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-48 sm:h-52 lg:h-56 object-cover transition-transform duration-500 group-hover:scale-110 pointer-events-none"
                     loading="lazy"
+                    draggable={false}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="absolute top-3 sm:top-4 left-3 sm:left-4 flex flex-wrap gap-2">
@@ -189,6 +281,13 @@ const FeaturedTours: React.FC = () => {
                     >
                       {tour.difficulty}
                     </span>
+                  </div>
+
+                  {/* Click indicator */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">
+                      <i className="bi bi-arrow-right text-white text-2xl"></i>
+                    </div>
                   </div>
                 </div>
 
@@ -212,31 +311,22 @@ const FeaturedTours: React.FC = () => {
                     </div>
                   </div>
 
-                  <a
-                    href={tour.link}
-                    className="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold transition-all duration-300 group-hover:translate-x-2 text-sm sm:text-base"
-                  >
-                    <span>Learn More</span>
-                    <i className="bi bi-arrow-right ml-2 transition-transform duration-300 group-hover:translate-x-1"></i>
-                  </a>
+                  <div className="flex items-center justify-between">
+                    <span className="text-teal-600 font-semibold text-sm sm:text-base">
+                      {isMobile ? "Tap to explore" : "Click to explore"}
+                    </span>
+                    <i className="bi bi-arrow-right text-teal-600 transition-transform duration-300 group-hover:translate-x-1"></i>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-
-          <button
-            onClick={() => scroll("right")}
-            className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm text-gray-800 p-2 sm:p-3 lg:p-4 rounded-full shadow-xl z-20 hover:bg-white hover:scale-110 transition-all duration-300 hidden md:flex items-center justify-center group"
-            aria-label="Scroll Right"
-          >
-            <i className="bi bi-chevron-right text-lg sm:text-xl group-hover:animate-pulse"></i>
-          </button>
         </div>
 
         {/* View All Button */}
         <div className="text-center mt-8 sm:mt-12">
           <a
-            href="/featuredTours"
+            href="/tours"
             className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-full shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl group text-sm sm:text-base"
           >
             <span>View All Destinations</span>
