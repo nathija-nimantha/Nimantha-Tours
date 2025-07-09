@@ -334,7 +334,7 @@ const FeaturedTours: React.FC = () => {
         {/* View All Button */}
         <div className="text-center mt-8 sm:mt-12">
           <a
-            href="/featuredTours"
+            href="/tours"
             className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-full shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl group text-sm sm:text-base"
           >
             <span>View All Destinations</span>
