@@ -23,7 +23,6 @@ const FeaturedTours: React.FC = () => {
   const [dragDistance, setDragDistance] = useState<number>(0)
   const [isMobile, setIsMobile] = useState<boolean>(false)
 
-  // Detect if device is mobile/tablet
   useEffect(() => {
     const checkIsMobile = () => {
       const userAgent = navigator.userAgent.toLowerCase()
@@ -63,7 +62,6 @@ const FeaturedTours: React.FC = () => {
     }
   }, [isAutoScrolling, isDragging])
 
-  // Mouse drag functionality (desktop only)
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (isMobile || !scrollContainerRef.current) return
@@ -103,7 +101,6 @@ const FeaturedTours: React.FC = () => {
     scrollContainerRef.current.style.cursor = "grab"
     scrollContainerRef.current.style.userSelect = "auto"
 
-    // Resume auto-scrolling after a delay if user didn't drag much
     const dragDuration = Date.now() - dragStartTime
     if (dragDistance < 50 && dragDuration < 200) {
       setTimeout(() => setIsAutoScrolling(true), 3000)
@@ -122,20 +119,17 @@ const FeaturedTours: React.FC = () => {
 
   const handleCardClick = useCallback(
     (e: React.MouseEvent, link: string) => {
-      // For mobile, always allow navigation
       if (isMobile) {
         window.location.href = link
         return
       }
 
-      // For desktop, prevent navigation if user was dragging
       const dragDuration = Date.now() - dragStartTime
       if (dragDistance > 10 || dragDuration > 300) {
         e.preventDefault()
         return
       }
 
-      // Navigate to the tour page
       window.location.href = link
     },
     [isMobile, dragStartTime, dragDistance],
@@ -213,7 +207,6 @@ const FeaturedTours: React.FC = () => {
 
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-      {/* Background decorations */}
       <div className="absolute top-0 left-0 w-36 h-36 sm:w-48 sm:h-48 lg:w-72 lg:h-72 bg-gradient-to-br from-teal-100 to-blue-100 rounded-full opacity-30 -translate-x-18 sm:-translate-x-24 lg:-translate-x-36 -translate-y-18 sm:-translate-y-24 lg:-translate-y-36"></div>
       <div className="absolute bottom-0 right-0 w-48 h-48 sm:w-64 sm:h-64 lg:w-96 lg:h-96 bg-gradient-to-tl from-orange-100 to-yellow-100 rounded-full opacity-30 translate-x-24 sm:translate-x-32 lg:translate-x-48 translate-y-24 sm:translate-y-32 lg:translate-y-48"></div>
 
@@ -234,7 +227,6 @@ const FeaturedTours: React.FC = () => {
           </p>
         </div>
 
-        {/* Scroll instruction - only show for desktop */}
         {!isMobile && (
           <div className="text-center mb-6">
             <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
