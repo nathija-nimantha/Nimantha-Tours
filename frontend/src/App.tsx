@@ -1,28 +1,28 @@
-import { Routes, Route } from "react-router-dom";
-import { Header } from "./components/Header";
-import { Footer } from "./components/Footer";
-import { Home } from "./pages/Home";
-import { About } from "./pages/About";
-import Itineraries from "./pages/Itineraries";
-import { Booking } from "./pages/Booking";
-import ContactUs from "./pages/ContactUs";
-import { Memories } from "./pages/Memories";
-import Policy from "./pages/Policy";
-import Tours from "./pages/Tours";
-import ScrollToTop from "./components/ScrollToTop";
-import FloatingActions from "./components/FloatingActions";
+import { Routes, Route } from "react-router-dom"
+import { Header } from "./components/Header"
+import { Footer } from "./components/Footer"
+import { Home } from "./pages/Home"
+import { About } from "./pages/About"
+import Itineraries from "./pages/Itineraries"
+import { Booking } from "./pages/Booking"
+import ContactUs from "./pages/ContactUs"
+import { Memories } from "./pages/Memories"
+import Policy from "./pages/Policy"
+import Tours from "./pages/Tours"
+import ScrollToTop from "./components/ScrollToTop"
+import FloatingActions from "./components/FloatingActions"
 
 // Tour Pages
-import Sigiriya from "./pages/tours/Sigiriya";
-import Ella from "./pages/tours/Ella";
-import Kandy from "./pages/tours/Kandy";
-import Galle from "./pages/tours/Galle";
-import NuwaraEliya from "./pages/tours/NuwaraEliya";
-import Yala from "./pages/tours/Yala";
+import Sigiriya from "./pages/tours/Sigiriya"
+import Ella from "./pages/tours/Ella"
+import Kandy from "./pages/tours/Kandy"
+import Galle from "./pages/tours/Galle"
+import NuwaraEliya from "./pages/tours/NuwaraEliya"
+import Yala from "./pages/tours/Yala"
 
 // Itinerary Detail Page
-import ItineraryDetailPage from "./pages/itinerary/ItineraryDetailPage";
-import React from "react";
+import ItineraryDetailPage from "./pages/itinerary/ItineraryDetailPage"
+import React from "react"
 
 function App() {
   return (
@@ -53,7 +53,7 @@ function App() {
       <ScrollToTop />
       <FloatingActions />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
