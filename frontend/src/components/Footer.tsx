@@ -6,7 +6,7 @@ const Footer = () => {
   const quickLinks = [
     { name: "Home", href: "/" },
     { name: "About Us", href: "/about" },
-    { name: "Featured Tours", href: "/featuredTours" },
+    { name: "Tours", href: "/tours" },
     { name: "Booking", href: "/booking" },
     { name: "Itineraries", href: "/itineraries" },
     { name: "Contact Us", href: "/contactUs" },
