@@ -24,7 +24,7 @@ const Header = () => {
   const navItems = [
     { path: "/", label: "Home", icon: "bi-house-heart-fill" },
     { path: "/about", label: "About", icon: "bi-info-circle-fill" },
-    { path: "/featuredTours", label: "Tours", icon: "bi-compass-fill" },
+    { path: "/tours", label: "Tours", icon: "bi-compass-fill" },
     { path: "/itineraries", label: "Itineraries", icon: "bi-map-fill" },
     { path: "/memories", label: "Memories", icon: "bi-camera-reels-fill" },
   ]
