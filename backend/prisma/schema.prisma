@@ -13,25 +13,28 @@ model Tour {
   slug        String     @unique
   description String
   shortDesc   String?
-  price       Float
-  duration    Int // in days
-  maxPeople   Int
-  difficulty  Difficulty @default(EASY)
+  price       String     // Changed to String to handle "$139" format
+  duration    String     // Changed to String to handle "2 Days" format
+  maxPeople   Int?       // Made optional
+  difficulty  String     // Changed to String for flexibility ("Easy", "Moderate", etc.)
   category    String
   featured    Boolean    @default(false)
-  images      String[] // Array of image URLs
+  images      String[]   // Array of image URLs
+  image       String?    // Single main image path
   location    String
-  coordinates Json? // {lat, lng}
+  coordinates Json?      // {lat, lng}
   startDates  DateTime[]
+  highlights  String[]   // Array of highlights
+  rating      Float?     // Added rating field (can be calculated from reviews too)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
-  // Relations - removed bookings relation
+  // Relations
   itinerary  Itinerary[]
   reviews    Review[]
   inclusions Inclusion[]
   exclusions Exclusion[]
-  Booking    Booking[]
+  bookings   Booking[]
 
   @@map("tours")
 }
@@ -76,34 +79,34 @@ model Exclusion {
 
 model Booking {
   id        Int    @id @default(autoincrement())
-  bookingId String @unique // Custom booking ID like BK0001 - automatically generated
+  bookingId String @unique // Custom booking ID like BK0001
 
-  // Customer details (no user relation needed)
+  // Customer details
   title       String // Mr, Mrs, Ms, Dr, etc.
-  name        String // Customer full name
-  nationality String // Customer nationality
-  email       String // Customer email
-  phone       String // Customer phone
+  name        String
+  nationality String
+  email       String
+  phone       String
 
-  startDate DateTime // Tour start date
-  nights    Int // Number of nights
-  adults    Int // Number of adults
-  children  Int // Number of children
+  startDate DateTime
+  nights    Int
+  adults    Int
+  children  Int
 
-  accommodation String // Accommodation preference
-  specialNote   String? // Special requests/notes
-  hearAboutUs   String? // How they heard about us
-  otherDetails  String? // Any other details
+  accommodation String
+  specialNote   String?
+  hearAboutUs   String?
+  otherDetails  String?
 
   // System fields
-  totalPrice Float         @default(0) // Default to 0 since no tour pricing
+  totalPrice Float         @default(0)
   status     BookingStatus @default(PENDING)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 
   // Relations
   payment Payment?
-  Tour    Tour?    @relation(fields: [tourId], references: [id])
+  tour    Tour?    @relation(fields: [tourId], references: [id])
   tourId  Int?
 
   @@map("bookings")
@@ -114,8 +117,8 @@ model Payment {
   bookingId Int           @unique
   amount    Float
   status    PaymentStatus @default(PENDING)
-  method    String? // card, bank_transfer, etc.
-  reference String? // transaction reference
+  method    String?
+  reference String?
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
@@ -129,14 +132,14 @@ model Review {
   id     Int @id @default(autoincrement())
   tourId Int
 
-  // Guest reviewer details (no user relation)
-  name      String // Reviewer name
-  email     String // Reviewer email
+  // Reviewer details
+  name      String
+  email     String
   rating    Int // 1-5 stars
   title     String?
   comment   String
-  images    String[] // Array of image URLs
-  verified  Boolean  @default(false) // verified if reviewer actually booked the tour
+  images    String[]
+  verified  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -164,7 +167,7 @@ model Destination {
   description String?
   image       String?
   country     String
-  coordinates Json? // {lat, lng}
+  coordinates Json?
   popular     Boolean  @default(false)
   createdAt   DateTime @default(now())
 
@@ -194,13 +197,6 @@ model Newsletter {
 }
 
 // Enums
-enum Difficulty {
-  EASY
-  MODERATE
-  CHALLENGING
-  EXTREME
-}
-
 enum BookingStatus {
   PENDING
   CONFIRMED
