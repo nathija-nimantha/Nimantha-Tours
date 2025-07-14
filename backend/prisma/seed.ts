@@ -30,9 +30,9 @@ async function main() {
         }),
         prisma.category.create({
             data: {
-                name: 'Beach Tours',
-                slug: 'beach-tours',
-                description: 'Relax on Sri Lanka\'s pristine beaches',
+                name: 'Nature Tours',
+                slug: 'nature-tours',
+                description: 'Experience Sri Lanka\'s natural beauty',
             },
         }),
     ]);
@@ -63,6 +63,16 @@ async function main() {
         }),
         prisma.destination.create({
             data: {
+                name: 'Nuwara Eliya',
+                slug: 'nuwara-eliya',
+                description: 'Little England with cool climate and tea estates',
+                country: 'Sri Lanka',
+                coordinates: { lat: 6.9497, lng: 80.7891 },
+                popular: true,
+            },
+        }),
+        prisma.destination.create({
+            data: {
                 name: 'Ella',
                 slug: 'ella',
                 description: 'Scenic hill station with breathtaking views',
@@ -75,27 +85,30 @@ async function main() {
 
     console.log('✅ Destinations created');
 
-    // Create sample tours
+    // Create sample tours matching your data structure
     const tours = await Promise.all([
         prisma.tour.create({
             data: {
                 title: 'Cultural Triangle Adventure',
                 slug: 'cultural-triangle-adventure',
-                description: 'Explore the ancient wonders of Sri Lanka\'s Cultural Triangle, including Sigiriya Rock Fortress, Polonnaruwa ancient city, and Dambulla Cave Temple. This comprehensive tour takes you through centuries of history and culture.',
+                description: 'Explore the ancient wonders of Sri Lanka\'s Cultural Triangle, including Sigiriya Rock Fortress, Polonnaruwa ancient city, and Dambulla Cave Temple.',
                 shortDesc: 'Ancient wonders and cultural heritage of Sri Lanka',
-                price: 250.00,
-                duration: 3,
+                price: '250',
+                duration: '3 Days',
                 maxPeople: 15,
-                difficulty: 'MODERATE',
-                category: 'Cultural',
+                difficulty: 'Moderate',
+                category: 'cultural',
                 featured: true,
                 images: [
                     'https://images.unsplash.com/photo-1566552881560-0be862a7c445',
                     'https://images.unsplash.com/photo-1578662996442-48f60103fc96',
                     'https://images.unsplash.com/photo-1578992687673-76d031a4b1fa'
                 ],
-                location: 'Sigiriya, Polonnaruwa, Dambulla',
+                image: '/src/assets/img/card-CulturalTriangle.jpg',
+                location: 'Central Province',
                 coordinates: { lat: 7.9570, lng: 80.7603 },
+                highlights: ['Sigiriya Rock Fortress', 'Polonnaruwa Ancient City', 'Dambulla Cave Temple'],
+                rating: 4.8,
                 startDates: [
                     new Date('2025-08-01'),
                     new Date('2025-08-15'),
@@ -106,23 +119,26 @@ async function main() {
         }),
         prisma.tour.create({
             data: {
-                title: 'Kandy to Ella Train Journey',
-                slug: 'kandy-ella-train-journey',
-                description: 'Experience one of the world\'s most scenic train rides through Sri Lanka\'s hill country. Journey from the cultural capital of Kandy to the charming town of Ella, passing through tea plantations, mountains, and the famous Nine Arch Bridge.',
-                shortDesc: 'Scenic train journey through Sri Lankan hill country',
-                price: 180.00,
-                duration: 2,
+                title: 'Nuwara Eliya',
+                slug: 'nuwara-eliya',
+                description: 'Little England with cool climate and tea estates. Experience the colonial charm and stunning landscapes of Sri Lanka\'s hill country.',
+                shortDesc: 'Little England with cool climate and tea estates',
+                price: '139',
+                duration: '2 Days',
                 maxPeople: 20,
-                difficulty: 'EASY',
-                category: 'Scenic',
+                difficulty: 'Easy',
+                category: 'nature',
                 featured: true,
                 images: [
                     'https://images.unsplash.com/photo-1544735716-392fe2489ffa',
                     'https://images.unsplash.com/photo-1578409712690-80d628c84ac2',
                     'https://images.unsplash.com/photo-1566552881560-0be862a7c445'
                 ],
-                location: 'Kandy to Ella',
-                coordinates: { lat: 7.2906, lng: 80.6337 },
+                image: '/src/assets/img/card-NuwaraEliya.jpg',
+                location: 'Central Province',
+                coordinates: { lat: 6.9497, lng: 80.7891 },
+                highlights: ['Tea Plantations', 'Gregory Lake', 'Strawberry Fields'],
+                rating: 4.5,
                 startDates: [
                     new Date('2025-07-20'),
                     new Date('2025-08-05'),
@@ -133,28 +149,57 @@ async function main() {
         }),
         prisma.tour.create({
             data: {
+                title: 'Kandy to Ella Train Journey',
+                slug: 'kandy-ella-train-journey',
+                description: 'Experience one of the world\'s most scenic train rides through Sri Lanka\'s hill country. Journey from Kandy to Ella through tea plantations and mountains.',
+                shortDesc: 'Scenic train journey through Sri Lankan hill country',
+                price: '180',
+                duration: '2 Days',
+                maxPeople: 20,
+                difficulty: 'Easy',
+                category: 'scenic',
+                featured: true,
+                images: [
+                    'https://images.unsplash.com/photo-1544735716-392fe2489ffa',
+                    'https://images.unsplash.com/photo-1578409712690-80d628c84ac2'
+                ],
+                image: '/src/assets/img/card-TrainJourney.jpg',
+                location: 'Kandy to Ella',
+                coordinates: { lat: 7.2906, lng: 80.6337 },
+                highlights: ['Scenic Train Ride', 'Nine Arch Bridge', 'Tea Country Views'],
+                rating: 4.7,
+                startDates: [
+                    new Date('2025-07-20'),
+                    new Date('2025-08-05'),
+                    new Date('2025-08-20')
+                ],
+            },
+        }),
+        prisma.tour.create({
+            data: {
                 title: 'Yala National Park Safari',
                 slug: 'yala-national-park-safari',
-                description: 'Embark on an exciting wildlife safari in Yala National Park, home to the highest density of leopards in the world. Spot elephants, sloth bears, crocodiles, and over 200 bird species in their natural habitat.',
+                description: 'Embark on an exciting wildlife safari in Yala National Park, home to the highest density of leopards in the world.',
                 shortDesc: 'Wildlife safari in Sri Lanka\'s premier national park',
-                price: 120.00,
-                duration: 1,
+                price: '120',
+                duration: '1 Day',
                 maxPeople: 8,
-                difficulty: 'EASY',
-                category: 'Wildlife',
+                difficulty: 'Easy',
+                category: 'wildlife',
                 featured: false,
                 images: [
                     'https://images.unsplash.com/photo-1549366021-9f761d040a94',
-                    'https://images.unsplash.com/photo-1564760055775-d63b17a55c44',
-                    'https://images.unsplash.com/photo-1570197788417-0e82375c9371'
+                    'https://images.unsplash.com/photo-1564760055775-d63b17a55c44'
                 ],
-                location: 'Yala National Park',
+                image: '/src/assets/img/card-YalaSafari.jpg',
+                location: 'Southern Province',
                 coordinates: { lat: 6.3725, lng: 81.5185 },
+                highlights: ['Leopard Spotting', 'Elephant Herds', 'Bird Watching'],
+                rating: 4.6,
                 startDates: [
                     new Date('2025-07-25'),
                     new Date('2025-08-10'),
-                    new Date('2025-08-25'),
-                    new Date('2025-09-10')
+                    new Date('2025-08-25')
                 ],
             },
         }),
@@ -164,51 +209,25 @@ async function main() {
                 slug: 'adams-peak-sunrise-hike',
                 description: 'Challenge yourself with a night hike to the summit of Adam\'s Peak (Sri Pada), one of Sri Lanka\'s most sacred mountains. Witness a spectacular sunrise from 2,243 meters above sea level.',
                 shortDesc: 'Sacred mountain sunrise hike experience',
-                price: 85.00,
-                duration: 1,
+                price: '85',
+                duration: '1 Day',
                 maxPeople: 12,
-                difficulty: 'CHALLENGING',
-                category: 'Adventure',
+                difficulty: 'Challenging',
+                category: 'adventure',
                 featured: false,
                 images: [
                     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4',
-                    'https://images.unsplash.com/photo-1464822759844-d150ad6d1ee4',
-                    'https://images.unsplash.com/photo-1518837695005-2083093ee35b'
+                    'https://images.unsplash.com/photo-1464822759844-d150ad6d1ee4'
                 ],
-                location: 'Adam\'s Peak',
+                image: '/src/assets/img/card-AdamsPeak.jpg',
+                location: 'Ratnapura District',
                 coordinates: { lat: 6.8092, lng: 80.4989 },
+                highlights: ['Sacred Summit', 'Sunrise Views', 'Pilgrimage Trail'],
+                rating: 4.9,
                 startDates: [
                     new Date('2025-08-03'),
                     new Date('2025-08-17'),
-                    new Date('2025-09-03'),
-                    new Date('2025-09-17')
-                ],
-            },
-        }),
-        prisma.tour.create({
-            data: {
-                title: 'Galle Fort & South Coast',
-                slug: 'galle-fort-south-coast',
-                description: 'Discover the colonial charm of Galle Fort, a UNESCO World Heritage Site, and explore the beautiful beaches of Sri Lanka\'s south coast. Includes whale watching opportunities in Mirissa.',
-                shortDesc: 'Colonial heritage and coastal beauty',
-                price: 200.00,
-                duration: 3,
-                maxPeople: 18,
-                difficulty: 'EASY',
-                category: 'Cultural',
-                featured: true,
-                images: [
-                    'https://images.unsplash.com/photo-1578992687673-76d031a4b1fa',
-                    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-                    'https://images.unsplash.com/photo-1566552881560-0be862a7c445'
-                ],
-                location: 'Galle, Unawatuna, Mirissa',
-                coordinates: { lat: 6.0535, lng: 80.2210 },
-                startDates: [
-                    new Date('2025-07-30'),
-                    new Date('2025-08-13'),
-                    new Date('2025-08-30'),
-                    new Date('2025-09-13')
+                    new Date('2025-09-03')
                 ],
             },
         }),
@@ -248,23 +267,23 @@ async function main() {
                 }
             ]
         },
-        // Kandy to Ella Train Journey itinerary
+        // Nuwara Eliya itinerary
         {
             tourId: tours[1].id,
             items: [
                 {
                     day: 1,
-                    title: 'Kandy Exploration & Train Journey',
-                    description: 'Explore Kandy city including the Temple of the Tooth Relic, Royal Botanical Gardens, and local markets. Board the scenic train to Ella in the afternoon.',
-                    activities: ['Temple of the Tooth visit', 'Botanical Gardens', 'Kandy Lake walk', 'Train journey to Ella'],
-                    meals: ['Breakfast', 'Lunch', 'Dinner'],
-                    accommodation: 'Ella Guesthouse'
+                    title: 'Nuwara Eliya Arrival & Tea Plantation',
+                    description: 'Arrive in Nuwara Eliya and visit a working tea plantation. Learn about tea processing and enjoy fresh Ceylon tea with stunning mountain views.',
+                    activities: ['Tea plantation tour', 'Tea factory visit', 'Tea tasting', 'Gregory Lake visit'],
+                    meals: ['Lunch', 'Dinner'],
+                    accommodation: 'Hill Club Hotel'
                 },
                 {
                     day: 2,
-                    title: 'Ella Adventures & Departure',
-                    description: 'Hike to Little Adam\'s Peak, visit Nine Arch Bridge, and explore Ella Rock. Experience tea plantation tours and local cuisine before departure.',
-                    activities: ['Little Adam\'s Peak hike', 'Nine Arch Bridge visit', 'Tea plantation tour', 'Ella Rock exploration'],
+                    title: 'Strawberry Fields & Departure',
+                    description: 'Visit strawberry fields and enjoy fresh strawberries. Explore the colonial architecture of Nuwara Eliya town before departure.',
+                    activities: ['Strawberry farm visit', 'Town exploration', 'Post Office visit', 'Shopping'],
                     meals: ['Breakfast', 'Lunch'],
                     accommodation: null
                 }
@@ -290,31 +309,21 @@ async function main() {
 
     console.log('✅ Itineraries created');
 
-    // Create inclusions and exclusions
+    // Create inclusions and exclusions (only for the 5 tours we created)
     const inclusionsData = [
-        // Cultural Triangle Adventure
         { tourId: tours[0].id, items: ['Professional guide', 'Entrance fees', 'Transportation', 'Accommodation', 'Meals as specified', 'Bottled water'] },
-        // Kandy to Ella Train
-        { tourId: tours[1].id, items: ['Train tickets', 'Professional guide', 'Accommodation in Ella', 'Breakfast', 'Transportation', 'Entrance fees'] },
-        // Yala Safari
-        { tourId: tours[2].id, items: ['Safari vehicle', 'Professional guide', 'Park entrance fees', 'Lunch', 'Bottled water', 'Binoculars'] },
-        // Adam\'s Peak
-        { tourId: tours[3].id, items: ['Professional guide', 'Transportation', 'Flashlights', 'First aid kit', 'Breakfast after hike', 'Certificate'] },
-        // Galle Fort
-        { tourId: tours[4].id, items: ['Professional guide', 'Transportation', 'Accommodation', 'Entrance fees', 'Boat trips', 'Meals as specified'] }
+        { tourId: tours[1].id, items: ['Professional guide', 'Tea plantation tour', 'Accommodation', 'Breakfast', 'Transportation', 'Tea tasting'] },
+        { tourId: tours[2].id, items: ['Train tickets', 'Professional guide', 'Accommodation in Ella', 'Breakfast', 'Transportation', 'Entrance fees'] },
+        { tourId: tours[3].id, items: ['Safari vehicle', 'Professional guide', 'Park entrance fees', 'Lunch', 'Bottled water', 'Binoculars'] },
+        { tourId: tours[4].id, items: ['Professional guide', 'Transportation', 'Flashlights', 'First aid kit', 'Breakfast after hike', 'Certificate'] }
     ];
 
     const exclusionsData = [
-        // Cultural Triangle Adventure
         { tourId: tours[0].id, items: ['International flights', 'Visa fees', 'Personal expenses', 'Tips', 'Alcoholic beverages', 'Travel insurance'] },
-        // Kandy to Ella Train
         { tourId: tours[1].id, items: ['International flights', 'Visa fees', 'Personal expenses', 'Dinner on day 1', 'Tips', 'Travel insurance'] },
-        // Yala Safari
-        { tourId: tours[2].id, items: ['International flights', 'Accommodation', 'Dinner', 'Personal expenses', 'Tips', 'Travel insurance'] },
-        // Adam\'s Peak
-        { tourId: tours[3].id, items: ['Accommodation', 'Other meals', 'Personal expenses', 'Warm clothing rental', 'Tips', 'Travel insurance'] },
-        // Galle Fort
-        { tourId: tours[4].id, items: ['International flights', 'Visa fees', 'Personal expenses', 'Tips', 'Alcoholic beverages', 'Travel insurance'] }
+        { tourId: tours[2].id, items: ['International flights', 'Visa fees', 'Personal expenses', 'Dinner on day 1', 'Tips', 'Travel insurance'] },
+        { tourId: tours[3].id, items: ['International flights', 'Accommodation', 'Dinner', 'Personal expenses', 'Tips', 'Travel insurance'] },
+        { tourId: tours[4].id, items: ['Accommodation', 'Other meals', 'Personal expenses', 'Warm clothing rental', 'Tips', 'Travel insurance'] }
     ];
 
     for (const inclusion of inclusionsData) {
@@ -341,7 +350,7 @@ async function main() {
 
     console.log('✅ Inclusions and exclusions created');
 
-    // Create sample bookings (guest bookings)
+    // Create sample bookings
     const bookings = await Promise.all([
         prisma.booking.create({
             data: {
@@ -367,7 +376,7 @@ async function main() {
         prisma.booking.create({
             data: {
                 bookingId: 'BK0002',
-                tourId: tours[1].id, // Kandy to Ella
+                tourId: tours[1].id,
                 title: 'Ms',
                 name: 'Sarah Johnson',
                 nationality: 'British',
@@ -381,67 +390,46 @@ async function main() {
                 specialNote: 'Child-friendly activities preferred',
                 hearAboutUs: 'Social Media',
                 otherDetails: 'Celebrating anniversary',
-                totalPrice: 270.00, // 180 for adult + 90 for child (50% discount)
+                totalPrice: 200.00,
                 status: 'COMPLETED',
-            },
-        }),
-        prisma.booking.create({
-            data: {
-                bookingId: 'BK0003',
-                tourId: tours[2].id, // Yala Safari
-                title: 'Dr',
-                name: 'Michael Wilson',
-                nationality: 'Canadian',
-                email: 'michael.w@example.com',
-                phone: '+15551234567',
-                startDate: new Date('2025-08-10'),
-                nights: 1,
-                adults: 2,
-                children: 2,
-                accommodation: 'Safari Lodge',
-                specialNote: 'Interested in wildlife photography',
-                hearAboutUs: 'Travel Blog',
-                otherDetails: 'Professional photographer',
-                totalPrice: 360.00, // 240 for adults + 120 for children
-                status: 'PENDING',
             },
         }),
     ]);
 
     console.log('✅ Bookings created');
 
-    // Create sample reviews (guest reviews)
+    // Create sample reviews
     const reviews = await Promise.all([
         prisma.review.create({
             data: {
-                tourId: tours[1].id, // Kandy to Ella
+                tourId: tours[1].id,
                 name: 'Sarah Johnson',
                 email: 'sarah.j@example.com',
                 rating: 5,
-                title: 'Absolutely breathtaking!',
-                comment: 'The train journey from Kandy to Ella was the highlight of my Sri Lanka trip. The scenery was absolutely stunning, and our guide was very knowledgeable about the local culture and history.',
+                title: 'Beautiful tea country experience!',
+                comment: 'Nuwara Eliya was absolutely magical. The tea plantations were stunning and the cool weather was a nice break from the heat. Highly recommend!',
                 verified: true,
             },
         }),
         prisma.review.create({
             data: {
-                tourId: tours[0].id, // Cultural Triangle
+                tourId: tours[0].id,
                 name: 'David Brown',
                 email: 'david.b@example.com',
-                rating: 4,
-                title: 'Great cultural experience',
-                comment: 'Loved exploring the ancient sites. Sigiriya was challenging but worth the climb. The guide provided excellent historical context throughout the tour.',
+                rating: 5,
+                title: 'Incredible cultural journey',
+                comment: 'The Cultural Triangle tour exceeded all expectations. Sigiriya was breathtaking and our guide was incredibly knowledgeable.',
                 verified: false,
             },
         }),
         prisma.review.create({
             data: {
-                tourId: tours[2].id, // Yala Safari
+                tourId: tours[2].id,
                 name: 'Emma Davis',
                 email: 'emma.d@example.com',
                 rating: 5,
-                title: 'Amazing wildlife experience',
-                comment: 'Saw so many animals including elephants and leopards! The guide was expert at spotting wildlife and very patient with photography.',
+                title: 'Most scenic train ride ever!',
+                comment: 'The train journey from Kandy to Ella was absolutely spectacular. The views were incredible and the Nine Arch Bridge was amazing!',
                 verified: false,
             },
         }),
@@ -497,10 +485,15 @@ async function main() {
     console.log(`- ${bookings.length} bookings created`);
     console.log(`- ${reviews.length} reviews created`);
     console.log('\n🔍 Test Data:');
-    console.log('Sample booking check:');
-    console.log('- Email: john.smith@example.com, Booking ID: BK0001');
-    console.log('- Email: sarah.j@example.com, Booking ID: BK0002');
-    console.log('- Email: michael.w@example.com, Booking ID: BK0003');
+    console.log('Sample tour data matches your format:');
+    console.log('- Nuwara Eliya: $139, 2 Days, Easy difficulty, nature category');
+    console.log('- Includes highlights: Tea Plantations, Gregory Lake, Strawberry Fields');
+    console.log('\n📱 API Endpoints:');
+    console.log('- GET /api/tours - Get all tours with filtering');
+    console.log('- GET /api/tours/featured - Get featured tours');
+    console.log('- GET /api/tours/category/nature - Get tours by category');
+    console.log('- GET /api/tours/slug/nuwara-eliya - Get tour by slug');
+    console.log('- GET /api/tours/1 - Get tour by ID');
 }
 
 main()
