@@ -20,7 +20,12 @@ export const corsOptions: CorsOptions = {
       );
     }
 
-    if (typeof origin === 'string' && allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps, curl, Postman, server-to-server)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
 
@@ -43,4 +48,3 @@ export const corsOptions: CorsOptions = {
   preflightContinue: false,
   optionsSuccessStatus: 200,
 };
-

@@ -13,8 +13,8 @@ model Tour {
   slug        String     @unique
   description String
   shortDesc   String?
-  price       String     // Changed to String to handle "$139" format
-  duration    String     // Changed to String to handle "2 Days" format
+  price       Int
+  duration    Int
   maxPeople   Int?       // Made optional
   difficulty  String     // Changed to String for flexibility ("Easy", "Moderate", etc.)
   category    String

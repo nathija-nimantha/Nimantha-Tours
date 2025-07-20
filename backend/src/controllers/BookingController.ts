@@ -32,28 +32,58 @@ export class BookingController extends BaseController {
                 return;
             }
 
-            // Generate custom booking ID automatically
-            const bookingId = await this.generateBookingId();
-
-            const booking = await this.prisma.booking.create({
-                data: {
-                    bookingId,
-                    title,
-                    name,
-                    nationality,
-                    email,
-                    phone,
-                    startDate: new Date(startDate),
-                    nights: parseInt(nights),
-                    adults: parseInt(adults),
-                    children: parseInt(children),
-                    accommodation,
-                    specialNote,
-                    hearAboutUs,
-                    otherDetails,
-                    totalPrice: 0, // Default to 0 since no tour pricing
-                },
+            // Get the latest booking number
+            const latestBooking = await this.prisma.booking.findFirst({
+                orderBy: { id: 'desc' },
+                select: { bookingId: true }
             });
+            let baseNumber = 1;
+            if (latestBooking && latestBooking.bookingId) {
+                const currentNumber = parseInt(latestBooking.bookingId.substring(2));
+                baseNumber = currentNumber + 1;
+            }
+
+            const maxAttempts = 5;
+            let attempt = 0;
+            let booking = null;
+            let lastError = null;
+            while (attempt < maxAttempts) {
+                try {
+                    const bookingId = `BK${(baseNumber + attempt).toString().padStart(4, '0')}`;
+                    booking = await this.prisma.booking.create({
+                        data: {
+                            bookingId,
+                            title,
+                            name,
+                            nationality,
+                            email,
+                            phone,
+                            startDate: new Date(startDate),
+                            nights: parseInt(nights),
+                            adults: parseInt(adults),
+                            children: parseInt(children),
+                            accommodation,
+                            specialNote,
+                            hearAboutUs,
+                            otherDetails,
+                            totalPrice: 0, // Default to 0 since no tour pricing
+                        },
+                    });
+                    break; // Success
+                } catch (error: any) {
+                    if (error.code === 'P2002' && error.meta && error.meta.target && error.meta.target.includes('bookingId')) {
+                        attempt++;
+                        lastError = error;
+                        continue; // Try next number
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+
+            if (!booking) {
+                throw lastError || new Error('Failed to create booking after multiple attempts');
+            }
 
             res.status(201).json({
                 message: 'Booking created successfully',
@@ -118,21 +148,5 @@ export class BookingController extends BaseController {
             console.error('Booking fetch error:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
-    }
-
-    private async generateBookingId(): Promise<string> {
-        const latestBooking = await this.prisma.booking.findFirst({
-            orderBy: { id: 'desc' },
-            select: { bookingId: true }
-        });
-
-        let nextNumber = 1;
-
-        if (latestBooking && latestBooking.bookingId) {
-            const currentNumber = parseInt(latestBooking.bookingId.substring(2));
-            nextNumber = currentNumber + 1;
-        }
-
-        return `BK${nextNumber.toString().padStart(4, '0')}`;
     }
 }
