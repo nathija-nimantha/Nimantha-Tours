@@ -96,7 +96,7 @@ async function main() {
                 price: 250,
                 duration: 3,
                 maxPeople: 15,
-                difficulty: 'Moderate',
+                difficulty: 'MODERATE',
                 category: 'cultural',
                 featured: true,
                 images: [
@@ -126,7 +126,7 @@ async function main() {
                 price: 139,
                 duration: 2,
                 maxPeople: 20,
-                difficulty: 'Easy',
+                difficulty: 'EASY',
                 category: 'nature',
                 featured: true,
                 images: [
@@ -156,7 +156,7 @@ async function main() {
                 price: 180,
                 duration: 2,
                 maxPeople: 20,
-                difficulty: 'Easy',
+                difficulty: 'EASY',
                 category: 'scenic',
                 featured: true,
                 images: [
@@ -184,7 +184,7 @@ async function main() {
                 price: 120,
                 duration: 1,
                 maxPeople: 8,
-                difficulty: 'Easy',
+                difficulty: 'EASY',
                 category: 'wildlife',
                 featured: false,
                 images: [
@@ -212,7 +212,7 @@ async function main() {
                 price: 85,
                 duration: 1,
                 maxPeople: 12,
-                difficulty: 'Challenging',
+                difficulty: 'CHALLENGING',
                 category: 'adventure',
                 featured: false,
                 images: [
