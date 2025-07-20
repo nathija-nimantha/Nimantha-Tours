@@ -1,3 +1,19 @@
+// Images
+
+import colomboImg from "/src/assets/img/card-Colombo.jpg";
+import sigiriyaImg from "/src/assets/img/card-Sigiriya.jpg";
+import kandyImg from "/src/assets/img/card-Kandy.jpg";
+import nuwaraEliyaImg from "/src/assets/img/card-NuwaraEliya.jpg";
+import yalaImg from "/src/assets/img/card-Yala.jpg";
+import ellaImg from "/src/assets/img/card-Ella.jpg";
+import galleImg from "/src/assets/img/card-Galle.jpg";
+import hortonsPlainsImg from "/src/assets/img/card-HortonPlains.jpg";
+import anuradhapuraImg from "/src/assets/img/card-Anuradhapura.png";
+import polonnaruwaImg from "/src/assets/img/card-Polonnaruwa.jpg";
+import dambullaImg from "/src/assets/img/card-DambullaRoyalCave.jpg";
+import ambuluwawaImg from "/src/assets/img/card-Ambuluwawa.jpg";
+
+// Tour Data
 export const enhancedItineraries = [
     {
         id: 1,
@@ -5,7 +21,7 @@ export const enhancedItineraries = [
         title: "Arrival in Colombo",
         description:
             "Welcome to Sri Lanka! Begin your journey with a comprehensive city tour of Colombo, exploring its vibrant streets, colonial architecture, and modern landmarks.",
-        image: "/src/assets/img/card-Colombo.jpg",
+        image: colomboImg,
         duration: "full-day",
         difficulty: "Easy" as const,
         category: "culture",
@@ -19,7 +35,7 @@ export const enhancedItineraries = [
         title: "Sigiriya Rock Fortress",
         description:
             "Climb the iconic Sigiriya Rock Fortress and immerse yourself in its ancient history, stunning frescoes, and breathtaking panoramic views from the summit.",
-        image: "/src/assets/img/card-Sigiriya.jpg",
+        image: sigiriyaImg,
         duration: "full-day",
         difficulty: "Moderate" as const,
         category: "culture",
@@ -33,7 +49,7 @@ export const enhancedItineraries = [
         title: "Cultural Kandy Experience",
         description:
             "Discover the cultural capital of Sri Lanka, including visits to the sacred Temple of the Tooth Relic, Royal Botanical Gardens, and traditional cultural performances.",
-        image: "/src/assets/img/card-Kandy.jpg",
+        image: kandyImg,
         duration: "full-day",
         difficulty: "Easy" as const,
         category: "culture",
@@ -47,7 +63,7 @@ export const enhancedItineraries = [
         title: "Tea Plantations in Nuwara Eliya",
         description:
             "Visit the lush tea plantations of Nuwara Eliya, learn about tea processing, enjoy scenic train rides, and experience the cool climate of 'Little England'.",
-        image: "/src/assets/img/card-NuwaraEliya.jpg",
+        image: nuwaraEliyaImg,
         duration: "full-day",
         difficulty: "Easy" as const,
         category: "nature",
@@ -61,7 +77,7 @@ export const enhancedItineraries = [
         title: "Yala Wildlife Safari",
         description:
             "Experience a thrilling safari at Yala National Park, home to leopards, elephants, and diverse wildlife. Early morning and evening game drives for optimal wildlife viewing.",
-        image: "/src/assets/img/card-Yala.jpg",
+        image: yalaImg,
         duration: "full-day",
         difficulty: "Easy" as const,
         category: "wildlife",
@@ -75,7 +91,7 @@ export const enhancedItineraries = [
         title: "Ella Hill Country Adventure",
         description:
             "Explore the scenic hill country of Ella with visits to Nine Arch Bridge, Little Adam's Peak hike, and breathtaking viewpoints over tea-covered mountains.",
-        image: "/src/assets/img/card-Ella.jpg",
+        image: ellaImg,
         duration: "full-day",
         difficulty: "Moderate" as const,
         category: "adventure",
@@ -89,7 +105,7 @@ export const enhancedItineraries = [
         title: "Galle Fort & Southern Beaches",
         description:
             "Explore the historic Galle Fort with its Dutch colonial architecture, lighthouse, and ramparts, followed by relaxation on pristine southern beaches.",
-        image: "/src/assets/img/card-Galle.jpg",
+        image: galleImg,
         duration: "full-day",
         difficulty: "Easy" as const,
         category: "culture",
@@ -103,7 +119,7 @@ export const enhancedItineraries = [
         title: "Horton Plains World's End",
         description:
             "Embark on an adventurous hike through Horton Plains National Park to World's End cliff, Baker's Falls, and experience unique montane ecosystem.",
-        image: "/src/assets/img/card-HortonPlains.jpg",
+        image: hortonsPlainsImg,
         duration: "full-day",
         difficulty: "Challenging" as const,
         category: "adventure",
@@ -111,4 +127,18 @@ export const enhancedItineraries = [
         highlights: ["World's End Cliff", "Baker's Falls", "Endemic Flora", "Cloud Forest", "Sunrise Views"],
         included: ["Early morning pickup", "Park fees", "Hiking guide", "Breakfast", "Packed lunch", "Rain gear"],
     },
+    {
+        id: 9,
+        day: "Day 9",
+        title: "Polonnaruwa Ancient City",
+        description:
+            "Explore the ancient city of Polonnaruwa, a UNESCO World Heritage Site, with its well-preserved ruins, including the Gal Vihara rock temple and the Royal Palace.",
+        image: polonnaruwaImg,
+        duration: "full-day",
+        difficulty: "Easy" as const,
+        category: "culture",
+        price: "$75",
+        highlights: ["Gal Vihara", "Royal Palace", "Lotus Pond", "Archaeological Museum", "Siva Devalaya"],
+        included: ["Cultural guide", "All entrance fees", "Lunch", "Transportation"],
+    }
 ]
