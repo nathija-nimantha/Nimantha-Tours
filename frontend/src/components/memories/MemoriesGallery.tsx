@@ -3,6 +3,20 @@
 import React, { useState } from "react"
 import { Fade, Zoom } from "react-awesome-reveal"
 
+// Images
+import colomboImg from "/src/assets/img/card-Colombo.jpg"
+import sigiriyaImg from "/src/assets/img/card-Sigiriya.jpg"
+import kandyImg from "/src/assets/img/card-Kandy.jpg"
+import nuwaraEliyaImg from "/src/assets/img/card-NuwaraEliya.jpg"
+import yalaImg from "/src/assets/img/card-Yala.jpg"
+import ellaImg from "/src/assets/img/card-Ella.jpg"
+import galleImg from "/src/assets/img/card-Galle.jpg"
+import hortonsPlainsImg from "/src/assets/img/card-HortonPlains.jpg"
+import anuradhapuraImg from "/src/assets/img/card-Anuradhapura.png"
+import polonnaruwaImg from "/src/assets/img/card-Polonnaruwa.jpg"
+import dambullaImg from "/src/assets/img/card-DambullaRoyalCave.jpg"
+import ambuluwawaImg from "/src/assets/img/card-Ambuluwawa.jpg"
+
 interface Category {
     id: string
     name: string
@@ -34,7 +48,7 @@ const MemoriesGallery: React.FC = () => {
     const memories: Memory[] = [
         {
             id: 1,
-            src: "/src/assets/img/card-Yala.jpg",
+            src: yalaImg,
             title: "Leopard Spotting at Yala",
             category: "wildlife",
             description: "Incredible wildlife encounter with Sri Lankan leopards",
@@ -43,7 +57,7 @@ const MemoriesGallery: React.FC = () => {
         },
         {
             id: 2,
-            src: "/src/assets/img/card-Sigiriya.jpg",
+            src: sigiriyaImg,
             title: "Ancient Sigiriya Rock",
             category: "culture",
             description: "Climbing the magnificent ancient rock fortress",
@@ -52,7 +66,7 @@ const MemoriesGallery: React.FC = () => {
         },
         {
             id: 3,
-            src: "/src/assets/img/card-Ella.jpg",
+            src: ellaImg,
             title: "Tea Plantation Views",
             category: "nature",
             description: "Breathtaking views of lush tea plantations",
@@ -61,7 +75,7 @@ const MemoriesGallery: React.FC = () => {
         },
         {
             id: 4,
-            src: "/src/assets/img/card-Kandy.jpg",
+            src: kandyImg,
             title: "Temple of the Tooth",
             category: "culture",
             description: "Sacred Buddhist temple experience",
@@ -70,7 +84,7 @@ const MemoriesGallery: React.FC = () => {
         },
         {
             id: 5,
-            src: "/src/assets/img/card-Galle.jpg",
+            src: galleImg,
             title: "Galle Fort Sunset",
             category: "culture",
             description: "Historic Dutch fort at golden hour",
@@ -79,7 +93,7 @@ const MemoriesGallery: React.FC = () => {
         },
         {
             id: 6,
-            src: "/src/assets/img/card-HortonPlains.jpg",
+            src: hortonsPlainsImg,
             title: "World's End Cliff",
             category: "adventure",
             description: "Thrilling hike to the edge of the world",
@@ -88,7 +102,7 @@ const MemoriesGallery: React.FC = () => {
         },
         {
             id: 7,
-            src: "/src/assets/img/card-NuwaraEliya.jpg",
+            src: nuwaraEliyaImg,
             title: "Little England",
             category: "nature",
             description: "Cool climate and beautiful landscapes",
@@ -97,12 +111,66 @@ const MemoriesGallery: React.FC = () => {
         },
         {
             id: 8,
-            src: "/src/assets/img/card-Ambuluwawa.jpg",
+            src: ambuluwawaImg,
             title: "Ambuluwawa Tower",
             category: "adventure",
             description: "Panoramic views from the spiral tower",
             location: "Ambuluwawa",
             date: "November 2023",
+        },
+        {
+            id: 9,
+            src: anuradhapuraImg,
+            title: "Anuradhapura Ruins",
+            category: "culture",
+            description: "Exploring ancient Sri Lankan civilization",
+            location: "Anuradhapura",
+            date: "October 2023",
+        },
+        {
+            id: 10,
+            src: polonnaruwaImg,
+            title: "Polonnaruwa Heritage",
+            category: "culture",
+            description: "Visiting the medieval capital of Sri Lanka",
+            location: "Polonnaruwa",
+            date: "September 2023",
+        },
+        {
+            id: 11,
+            src: dambullaImg,
+            title: "Dambulla Cave Temple",
+            category: "culture",
+            description: "Marveling at ancient rock temples and statues",
+            location: "Dambulla",
+            date: "August 2023",
+        },
+        {
+            id: 12,
+            src: colomboImg,
+            title: "Colombo City Life",
+            category: "culture",
+            description: "Vibrant city life and modern architecture",
+            location: "Colombo",
+            date: "July 2023",
+        },
+        {
+            id: 13,
+            src: yalaImg,
+            title: "Yala Safari Adventure",
+            category: "wildlife",
+            description: "Exciting safari through Yala National Park",
+            location: "Yala",
+            date: "June 2023",
+        },
+        {
+            id: 14,
+            src: galleImg,
+            title: "Galle Lighthouse",
+            category: "culture",
+            description: "Iconic lighthouse with stunning coastal views",
+            location: "Galle",
+            date: "May 2023",
         },
     ]
 
