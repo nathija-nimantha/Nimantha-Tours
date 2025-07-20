@@ -4,6 +4,20 @@ import React from "react"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
+// Images
+import sigiriyaImg from '../assets/img/card-Sigiriya.jpg';
+import ellaImg from '../assets/img/card-Ella.jpg';
+import kandyImg from '../assets/img/card-Kandy.jpg';
+import galleImg from '../assets/img/card-Galle.jpg';
+import nuwaraEliyaImg from '../assets/img/card-NuwaraEliya.jpg';
+import yalaImg from '../assets/img/card-Yala.jpg';
+import anuradhapuraImg from '../assets/img/card-Anuradhapura.png';
+import polonnaruwaImg from '../assets/img/card-Polonnaruwa.jpg';
+import dambullaImg from '../assets/img/card-DambullaRoyalCave.jpg';
+import hortonsPlainsImg from '../assets/img/card-HortonPlains.jpg';
+import colomboImg from '../assets/img/card-Colombo.jpg';
+import ambuluwawaImg from '../assets/img/card-Ambuluwawa.jpg';
+
 interface Tour {
   id: string
   title: string
@@ -58,7 +72,7 @@ const Tours = () => {
       id: "sigiriya",
       title: "Sigiriya Rock Fortress",
       location: "Central Province",
-      image: "/src/assets/img/card-Sigiriya.jpg",
+      image: sigiriyaImg,
       duration: "1 Day",
       price: "$89",
       rating: 4.8,
@@ -71,7 +85,7 @@ const Tours = () => {
       id: "ella",
       title: "Ella Hill Country",
       location: "Uva Province",
-      image: "/src/assets/img/card-Ella.jpg",
+      image: ellaImg,
       duration: "2 Days",
       price: "$159",
       rating: 4.9,
@@ -84,7 +98,7 @@ const Tours = () => {
       id: "kandy",
       title: "Kandy Cultural Tour",
       location: "Central Province",
-      image: "/src/assets/img/card-Kandy.jpg",
+      image: kandyImg,
       duration: "1 Day",
       price: "$79",
       rating: 4.7,
@@ -97,7 +111,7 @@ const Tours = () => {
       id: "galle",
       title: "Galle Fort Heritage",
       location: "Southern Province",
-      image: "/src/assets/img/card-Galle.jpg",
+      image: galleImg,
       duration: "1 Day",
       price: "$69",
       rating: 4.6,
@@ -110,7 +124,7 @@ const Tours = () => {
       id: "nuwara-eliya",
       title: "Nuwara Eliya",
       location: "Central Province",
-      image: "/src/assets/img/card-NuwaraEliya.jpg",
+      image: nuwaraEliyaImg,
       duration: "2 Days",
       price: "$139",
       rating: 4.5,
@@ -123,7 +137,7 @@ const Tours = () => {
       id: "yala",
       title: "Yala Safari",
       location: "Southern Province",
-      image: "/src/assets/img/card-Yala.jpg",
+      image: yalaImg,
       duration: "2 Days",
       price: "$199",
       rating: 4.8,
@@ -136,7 +150,7 @@ const Tours = () => {
       id: "anuradhapura",
       title: "Anuradhapura Ancient City",
       location: "North Central Province",
-      image: "/src/assets/img/card-Anuradhapura.png",
+      image: anuradhapuraImg,
       duration: "1 Day",
       price: "$75",
       rating: 4.6,
@@ -149,7 +163,7 @@ const Tours = () => {
       id: "polonnaruwa",
       title: "Polonnaruwa Heritage",
       location: "North Central Province",
-      image: "/src/assets/img/card-Polonnaruwa.jpg",
+      image: polonnaruwaImg,
       duration: "1 Day",
       price: "$72",
       rating: 4.5,
@@ -162,7 +176,7 @@ const Tours = () => {
       id: "dambulla",
       title: "Dambulla Cave Temple",
       location: "Central Province",
-      image: "/src/assets/img/card-DambullaRoyalCave.jpg",
+      image: dambullaImg,
       duration: "Half Day",
       price: "$45",
       rating: 4.4,
@@ -175,7 +189,7 @@ const Tours = () => {
       id: "horton-plains",
       title: "Horton Plains National Park",
       location: "Central Province",
-      image: "/src/assets/img/card-HortonPlains.jpg",
+      image: hortonsPlainsImg,
       duration: "1 Day",
       price: "$95",
       rating: 4.7,
@@ -188,7 +202,7 @@ const Tours = () => {
       id: "colombo",
       title: "Colombo City Tour",
       location: "Western Province",
-      image: "/src/assets/img/card-Colombo.jpg",
+      image: colomboImg,
       duration: "Half Day",
       price: "$55",
       rating: 4.3,
@@ -201,7 +215,7 @@ const Tours = () => {
       id: "ambuluwawa",
       title: "Ambuluwawa Tower",
       location: "Central Province",
-      image: "/src/assets/img/card-Ambuluwawa.jpg",
+      image: ambuluwawaImg,
       duration: "Half Day",
       price: "$40",
       rating: 4.2,
