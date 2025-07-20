@@ -140,5 +140,47 @@ export const enhancedItineraries = [
         price: "$75",
         highlights: ["Gal Vihara", "Royal Palace", "Lotus Pond", "Archaeological Museum", "Siva Devalaya"],
         included: ["Cultural guide", "All entrance fees", "Lunch", "Transportation"],
+    },
+        {
+        id: 10,
+        day: "Day 10",
+        title: "Anuradhapura Ancient City",
+        description:
+            "Discover the ancient city of Anuradhapura, a UNESCO World Heritage Site, known for its well-preserved ruins, including stupas, monasteries, and the sacred Bodhi tree.",
+        image: anuradhapuraImg,
+        duration: "full-day",
+        difficulty: "Easy" as const,
+        category: "culture",
+        price: "$80",
+        highlights: ["Sri Maha Bodhi", "Ruwanwelisaya Stupa", "Isurumuniya Rock Temple", "Archaeological Museum", "Kuttam Pokuna"],
+        included: ["Cultural guide", "All entrance fees", "Lunch", "Transportation"],
+    },
+    {
+        id: 11,
+        day: "Day 11",
+        title: "Sigiriya Rock Fortress",
+        description:
+            "Climb the iconic Sigiriya Rock Fortress, a UNESCO World Heritage Site, known for its ancient frescoes, water gardens, and stunning views from the summit.",
+        image: sigiriyaImg,
+        duration: "full-day",
+        difficulty: "Moderate" as const,
+        category: "culture",
+        price: "$85",
+        highlights: ["Sigiriya Rock", "Frescoes", "Lion's Gate", "Water Gardens", "Summit Views"],
+        included: ["Cultural guide", "All entrance fees", "Lunch", "Transportation"],
+    },
+    {
+        id: 12,
+        day: "Day 12",
+        title: "Dambulla Cave Temple",
+        description:
+            "Visit the Dambulla Cave Temple, a UNESCO World Heritage Site, famous for its stunning rock-cut Buddha statues and beautiful cave paintings.",
+        image: dambullaImg,
+        duration: "half-day",
+        difficulty: "Easy" as const,
+        category: "culture",
+        price: "$50",
+        highlights: ["Golden Temple", "Cave Temples", "Buddha Statues", "Rock Paintings"],
+        included: ["Cultural guide", "All entrance fees", "Transportation"],
     }
 ]
