@@ -3,6 +3,20 @@
 import React from "react"
 import { useRef, useEffect, useState, useCallback } from "react"
 
+// Images
+import sigiriyaImg from "../assets/img/card-Sigiriya.jpg"
+import ellaImg from "../assets/img/card-Ella.jpg"
+import kandyImg from "../assets/img/card-Kandy.jpg"
+import galleImg from "../assets/img/card-Galle.jpg"
+import nuwaraEliyaImg from "../assets/img/card-NuwaraEliya.jpg"
+import yalaImg from "../assets/img/card-Yala.jpg"
+import anuradhapuraImg from "../assets/img/card-Anuradhapura.png"
+import polonnaruwaImg from "../assets/img/card-Polonnaruwa.jpg"
+import dambullaImg from "../assets/img/card-DambullaRoyalCave.jpg"
+import hortonsPlainsImg from "../assets/img/card-HortonPlains.jpg"
+import colomboImg from "../assets/img/card-Colombo.jpg"
+import ambuluwawaImg from "../assets/img/card-Ambuluwawa.jpg"
+
 interface Tour {
   title: string
   img: string
@@ -138,7 +152,7 @@ const FeaturedTours: React.FC = () => {
   const tours: Tour[] = [
     {
       title: "Sigiriya",
-      img: "/src/assets/img/card-Sigiriya.jpg",
+      img: sigiriyaImg,
       description: "Ancient rock fortress with stunning panoramic views and fascinating frescoes.",
       link: "/tours/sigiriya",
       duration: "Full Day",
@@ -147,7 +161,7 @@ const FeaturedTours: React.FC = () => {
     },
     {
       title: "Ella",
-      img: "/src/assets/img/card-Ella.jpg",
+      img: ellaImg,
       description: "Scenic highlands with lush tea plantations and breathtaking mountain views.",
       link: "/tours/ella",
       duration: "2-3 Days",
@@ -156,7 +170,7 @@ const FeaturedTours: React.FC = () => {
     },
     {
       title: "Kandy",
-      img: "/src/assets/img/card-Kandy.jpg",
+      img: kandyImg,
       description: "Cultural capital with the sacred Temple of the Tooth Relic.",
       link: "/tours/kandy",
       duration: "Full Day",
@@ -165,7 +179,7 @@ const FeaturedTours: React.FC = () => {
     },
     {
       title: "Galle",
-      img: "/src/assets/img/card-Galle.jpg",
+      img: galleImg,
       description: "Historic fortified city with well-preserved Dutch colonial architecture.",
       link: "/tours/galle",
       duration: "Half Day",
@@ -174,7 +188,7 @@ const FeaturedTours: React.FC = () => {
     },
     {
       title: "Nuwara Eliya",
-      img: "/src/assets/img/card-NuwaraEliya.jpg",
+      img: nuwaraEliyaImg,
       description: "Known as 'Little England' for its cool climate and pristine tea plantations.",
       link: "/tours/nuwara-eliya",
       duration: "1-2 Days",
@@ -183,12 +197,68 @@ const FeaturedTours: React.FC = () => {
     },
     {
       title: "Yala National Park",
-      img: "/src/assets/img/card-Yala.jpg",
+      img: yalaImg,
       description: "Premier wildlife reserve famous for leopards, elephants, and diverse fauna.",
       link: "/tours/yala",
       duration: "Full Day",
       difficulty: "Easy",
       highlights: ["Leopard Spotting", "Elephant Herds", "Bird Watching"],
+    },
+    {
+      title: "Anuradhapura",
+      img: anuradhapuraImg,
+      description: "Ancient city with well-preserved ruins and sacred Buddhist sites.",
+      link: "/tours/anuradhapura",
+      duration: "Full Day",
+      difficulty: "Easy",
+      highlights: ["Sri Maha Bodhi", "Ruwanwelisaya", "Isurumuniya"],
+    },
+    {
+      title: "Polonnaruwa",
+      img: polonnaruwaImg,
+      description: "Medieval capital with impressive archaeological sites and ancient temples.",
+      link: "/tours/polonnaruwa",
+      duration: "Full Day",
+      difficulty: "Easy",
+      highlights: ["Gal Vihara", "Royal Palace", "Parakrama Samudra"],
+    },
+    {
+      title: "Dambulla Cave Temple",
+      img: dambullaImg,
+      description: "Famous cave temple complex with stunning Buddha statues and frescoes.",
+      link: "/tours/dambulla",
+      duration: "Half Day",
+      difficulty: "Easy",
+      highlights: ["Golden Buddha", "Cave Frescoes", "Rock Temple"],
+    },
+    {
+      title: "Horton Plains National Park",
+      img: hortonsPlainsImg,
+      description: "High-altitude national park known for its unique biodiversity and scenic hikes.",
+      link: "/tours/hortons-plains",
+      duration: "Full Day",
+      difficulty: "Moderate",
+      highlights: ["World's End", "Baker's Falls", "Flora & Fauna"],
+    },
+    {
+      title: "Colombo City Tour",
+      img: colomboImg,
+      description:
+        "Explore the vibrant capital city with a mix of modern attractions and colonial heritage.",
+      link: "/tours/colombo",
+      duration: "Half Day",
+      difficulty: "Easy",
+      highlights: ["Galle Face Green", "Gangaramaya Temple", "National Museum"],
+    },
+    {
+      title: "Ambuluwawa Tower",
+      img: ambuluwawaImg,
+      description:
+        "Unique tower offering panoramic views of the surrounding mountains and valleys, set in a serene environment.",
+      link: "/tours/ambuluwawa",
+      duration: "Half Day",
+      difficulty: "Moderate",
+      highlights: ["360° Views", "Biodiversity Park", "Cultural Significance"],
     },
   ]
 
