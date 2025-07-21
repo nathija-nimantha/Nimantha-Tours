@@ -104,7 +104,7 @@ const Header = () => {
             {/* Quick Contact Buttons - Responsive sizes */}
             <a
               href="tel:+94779024795"
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-teal-500 hover:bg-teal-600 flex items-center justify-center text-white transition-all duration-300 transform hover:scale-105 shadow-md"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-teal-500 hover:bg-teal-600 flex items-center justify-center text-white transition-all duration-300 transform hover:scale-105 shadow-md"
               aria-label="Call us"
             >
               <i className="bi bi-telephone text-xs sm:text-sm"></i>
@@ -114,7 +114,7 @@ const Header = () => {
               href="https://wa.me/94779024795"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-green-500 hover:bg-green-600 flex items-center justify-center text-white transition-all duration-300 transform hover:scale-105 shadow-md"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white transition-all duration-300 transform hover:scale-105 shadow-md"
               aria-label="WhatsApp us"
             >
               <i className="bi bi-whatsapp text-xs sm:text-sm"></i>
@@ -122,23 +122,23 @@ const Header = () => {
 
             {/* Hamburger Menu Button */}
             <button
-              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-md ml-2"
+              className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-md ml-2"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
-              <div className="relative w-5 h-5">
+              <div className="relative w-4 h-4 sm:w-5 sm:h-5 flex flex-col justify-center items-center">
                 <span
-                  className={`absolute block w-5 h-0.5 bg-gray-700 transform transition-all duration-300 ${
+                  className={`absolute block w-4 sm:w-5 h-0.5 bg-gray-700 transform transition-all duration-300 ${
                     isMenuOpen ? "rotate-45 translate-y-0" : "-translate-y-1.5"
                   }`}
                 ></span>
                 <span
-                  className={`absolute block w-5 h-0.5 bg-gray-700 transform transition-all duration-300 ${
+                  className={`absolute block w-4 sm:w-5 h-0.5 bg-gray-700 transform transition-all duration-300 ${
                     isMenuOpen ? "opacity-0" : "opacity-100"
                   }`}
                 ></span>
                 <span
-                  className={`absolute block w-5 h-0.5 bg-gray-700 transform transition-all duration-300 ${
+                  className={`absolute block w-4 sm:w-5 h-0.5 bg-gray-700 transform transition-all duration-300 ${
                     isMenuOpen ? "-rotate-45 translate-y-0" : "translate-y-1.5"
                   }`}
                 ></span>
@@ -146,7 +146,6 @@ const Header = () => {
             </button>
           </div>
         </div>
-
         {/* Mobile/Tablet Navigation Menu */}
         <div
           className={`xl:hidden overflow-hidden transition-all duration-500 ease-in-out ${

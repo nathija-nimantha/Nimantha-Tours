@@ -280,7 +280,7 @@ const ItineraryDetail: React.FC<ItineraryDetailProps> = ({
                     </div>
                     <div className="flex items-center space-x-3">
                       <i className="bi bi-envelope-fill text-teal-600"></i>
-                      <span>info@srilankantours.com</span>
+                      <span>info@nimanthatours.com</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <i className="bi bi-whatsapp text-green-600"></i>
