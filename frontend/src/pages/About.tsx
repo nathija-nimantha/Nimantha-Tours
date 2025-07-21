@@ -1,14 +1,18 @@
 import AboutHero from "../components/about/AboutHero"
-import AboutContent from "../components/about/AboutContent"
-import CoreValues from "../components/about/CoreValues"
+import CompanyStory from "../components/about/CompanyStory"
+import MissionVision from "../components/about/MissionVision"
+import WhyChooseUs from "../components/about/WhyChooseUs"
+import CallToAction from "../components/about/CallToAction"
 import React from "react"
 
 export const About = () => {
   return (
     <div className="min-h-screen">
       <AboutHero />
-      <AboutContent />
-      <CoreValues />
+      <CompanyStory />
+      <MissionVision />
+      <WhyChooseUs />
+      <CallToAction />
     </div>
   )
 }
