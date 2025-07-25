@@ -1181,3 +1181,147 @@ textarea {
     max-width: 350px;
   }
 }
+
+/* Testimonials Section Mobile Optimizations */
+.testimonials-section {
+  contain: layout style paint;
+}
+
+.testimonial-card {
+  contain: layout style;
+}
+
+/* Prevent text overflow on mobile */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Mobile card stack animations */
+@media (max-width: 1023px) {
+  .testimonials-section .testimonial-mobile-card {
+    transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .testimonials-section .testimonial-mobile-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .testimonials-section .mobile-image-card {
+    transform: scale(1);
+    transition: all 0.5s ease-out;
+  }
+  
+  .testimonials-section .mobile-image-card:hover {
+    transform: scale(1.02);
+  }
+}
+
+/* Smooth scroll behavior for mobile */
+@media (max-width: 768px) {
+  .testimonials-section {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Prevent horizontal scroll issues */
+  .testimonials-section * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Optimize backdrop blur for mobile performance */
+  .backdrop-blur-sm,
+  .backdrop-blur-md {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  
+  /* Enhanced mobile grid spacing */
+  .testimonials-section .grid {
+    gap: 1.5rem !important;
+  }
+  
+  /* Better touch targets for mobile */
+  .testimonials-section button,
+  .testimonials-section a {
+    touch-action: manipulation;
+  }
+  
+  /* Mobile testimonial card improvements */
+  .testimonials-section .testimonial-mobile-card {
+    margin-bottom: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  /* Mobile image card enhancements */
+  .testimonials-section .mobile-image-card {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Enhanced mobile responsiveness for very small screens */
+@media (max-width: 480px) {
+  .testimonials-section {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  .testimonials-section h2 {
+    font-size: 2rem !important;
+    line-height: 2.25rem !important;
+  }
+  
+  .testimonials-section .text-3xl {
+    font-size: 1.875rem !important;
+    line-height: 2.25rem !important;
+  }
+  
+  .testimonials-section .container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  /* Smaller mobile card adjustments */
+  .testimonials-section .testimonial-mobile-card {
+    padding: 1.25rem !important;
+    margin-bottom: 1rem;
+  }
+  
+  .testimonials-section .mobile-image-card {
+    height: 14rem !important;
+  }
+}
+
+/* Touch-friendly interactive elements */
+@media (max-width: 768px) {
+  .testimonials-section button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .testimonials-section a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .testimonials-section * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
