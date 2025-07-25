@@ -1205,6 +1205,8 @@ textarea {
   .testimonials-section {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   
   /* Prevent horizontal scroll issues */
@@ -1218,6 +1220,40 @@ textarea {
   .backdrop-blur-md {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+  }
+  
+  /* Enhanced mobile grid spacing */
+  .testimonials-section .grid {
+    gap: 1.5rem !important;
+  }
+  
+  /* Better touch targets for mobile */
+  .testimonials-section button,
+  .testimonials-section a {
+    touch-action: manipulation;
+  }
+}
+
+/* Enhanced mobile responsiveness for very small screens */
+@media (max-width: 480px) {
+  .testimonials-section {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  .testimonials-section h2 {
+    font-size: 2rem !important;
+    line-height: 2.25rem !important;
+  }
+  
+  .testimonials-section .text-3xl {
+    font-size: 1.875rem !important;
+    line-height: 2.25rem !important;
+  }
+  
+  .testimonials-section .container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 
