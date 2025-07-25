@@ -1200,6 +1200,28 @@ textarea {
   overflow: hidden;
 }
 
+/* Mobile card stack animations */
+@media (max-width: 1023px) {
+  .testimonials-section .testimonial-mobile-card {
+    transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .testimonials-section .testimonial-mobile-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .testimonials-section .mobile-image-card {
+    transform: scale(1);
+    transition: all 0.5s ease-out;
+  }
+  
+  .testimonials-section .mobile-image-card:hover {
+    transform: scale(1.02);
+  }
+}
+
 /* Smooth scroll behavior for mobile */
 @media (max-width: 768px) {
   .testimonials-section {
@@ -1232,6 +1254,18 @@ textarea {
   .testimonials-section a {
     touch-action: manipulation;
   }
+  
+  /* Mobile testimonial card improvements */
+  .testimonials-section .testimonial-mobile-card {
+    margin-bottom: 1.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  /* Mobile image card enhancements */
+  .testimonials-section .mobile-image-card {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 }
 
 /* Enhanced mobile responsiveness for very small screens */
@@ -1254,6 +1288,16 @@ textarea {
   .testimonials-section .container {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+  }
+  
+  /* Smaller mobile card adjustments */
+  .testimonials-section .testimonial-mobile-card {
+    padding: 1.25rem !important;
+    margin-bottom: 1rem;
+  }
+  
+  .testimonials-section .mobile-image-card {
+    height: 14rem !important;
   }
 }
 
