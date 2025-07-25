@@ -150,30 +150,116 @@ const TestimonialsSection: React.FC = () => {
                     </Fade>
                 </div>
 
-                {/* Redesigned Testimonial Layout - Mobile First */}
+                {/* Redesigned Testimonial Layout - Mobile First with Card Stack Design */}
                 <div className="max-w-7xl mx-auto mb-10 sm:mb-12 lg:mb-16">
-                    <div className="relative min-h-[600px] sm:min-h-[650px] lg:min-h-[500px]">
+                    <div className="relative min-h-[550px] sm:min-h-[600px] lg:min-h-[500px]">
                         <div
                             className={`absolute inset-0 transition-all duration-500 ease-in-out transform ${
                                 isTransitioning ? "opacity-0 translate-y-8 sm:translate-y-12 scale-95" : "opacity-100 translate-y-0 scale-100"
                             }`}
                         >
-                            {/* Main Testimonial Card - Mobile Optimized Layout */}
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 h-full">
+                            {/* Mobile: Single Column Card Stack Layout */}
+                            <div className="block lg:hidden">
+                                {/* Mobile Testimonial Card */}
+                                <div className="testimonial-mobile-card bg-white rounded-3xl shadow-2xl p-6 sm:p-8 relative overflow-hidden border border-gray-100 mb-6">
+                                    {/* Mobile Header with Avatar and Rating */}
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                                                {currentTest.avatar}
+                                            </div>
+                                            <div>
+                                                <h4 className="text-lg font-bold text-gray-900">{currentTest.name}</h4>
+                                                <p className="text-sm text-gray-600 flex items-center">
+                                                    <i className="bi bi-geo-alt text-teal-500 mr-1"></i>
+                                                    {currentTest.location}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center space-x-1">
+                                            {renderStars(currentTest.rating)}
+                                        </div>
+                                    </div>
+
+                                    {/* Quote and Testimonial Text */}
+                                    <div className="mb-6">
+                                        <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 transform -rotate-3">
+                                            <i className="bi bi-quote text-white text-xl"></i>
+                                        </div>
+                                        <blockquote className="text-lg text-gray-700 leading-relaxed font-medium italic">
+                                            "{currentTest.text}"
+                                        </blockquote>
+                                    </div>
+
+                                    {/* Tour Info Card */}
+                                    <div className="bg-gradient-to-r from-teal-50 to-blue-50 rounded-2xl p-4 border border-teal-100">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h5 className="font-semibold text-gray-800 text-sm mb-1">Tour Package</h5>
+                                                <p className="text-gray-600 text-sm">{currentTest.tour}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-xs text-gray-500 mb-1">{currentTest.date}</p>
+                                                <div className="w-10 h-6 bg-gradient-to-r from-gray-200 to-gray-300 rounded-md flex items-center justify-center text-xs font-bold text-gray-600">
+                                                    {currentTest.country.slice(0, 2).toUpperCase()}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Decorative elements */}
+                                    <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-teal-100/30 to-blue-100/30 rounded-full -translate-y-10 translate-x-10"></div>
+                                    <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-purple-100/30 to-pink-100/30 rounded-full translate-y-8 -translate-x-8"></div>
+                                </div>
+
+                                {/* Mobile Image Card */}
+                                <div className="mobile-image-card relative h-64 sm:h-72 rounded-3xl overflow-hidden shadow-xl group">
+                                    <img
+                                        src={currentTest.image || "/placeholder.svg"}
+                                        alt={`${currentTest.tour} experience`}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                    
+                                    {/* Verified Badge */}
+                                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg">
+                                        <div className="flex items-center space-x-2">
+                                            <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
+                                            <span className="text-xs font-semibold text-gray-800">Verified Experience</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Rating overlay */}
+                                    <div className="absolute bottom-4 left-4 right-4">
+                                        <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 border border-white/30">
+                                            <div className="flex items-center justify-between text-white">
+                                                <span className="text-sm font-medium">Rating</span>
+                                                <div className="flex items-center space-x-1">
+                                                    <span className="text-lg font-bold">{currentTest.rating}.0</span>
+                                                    <i className="bi bi-star-fill text-yellow-400"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Desktop: Original Grid Layout */}
+                            <div className="hidden lg:grid lg:grid-cols-12 gap-12 h-full">
                                 {/* Left Side - Image & Tour Info */}
-                                <div className="lg:col-span-5 relative order-2 lg:order-1">
-                                    <div className="relative h-72 sm:h-80 lg:h-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl sm:shadow-2xl group">
+                                <div className="lg:col-span-5 relative">
+                                    <div className="relative h-full rounded-3xl overflow-hidden shadow-2xl group">
                                         <img
                                             src={currentTest.image || "/placeholder.svg"}
                                             alt={`${currentTest.tour} experience`}
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 sm:group-hover:scale-110"
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                         />
 
                                         {/* Gradient Overlay */}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
 
                                         {/* Tour Badge */}
-                                        <div className="absolute top-4 left-4 sm:top-6 sm:left-6 bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl px-4 py-2 sm:px-4 sm:py-2 shadow-lg">
+                                        <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg">
                                             <div className="flex items-center space-x-2">
                                                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                                                 <span className="text-sm font-semibold text-gray-800">Verified Review</span>
@@ -181,9 +267,9 @@ const TestimonialsSection: React.FC = () => {
                                         </div>
 
                                         {/* Tour Info Overlay */}
-                                        <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 text-white">
-                                            <div className="bg-white/10 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/20">
-                                                <h4 className="text-lg sm:text-xl font-bold mb-2 line-clamp-2">{currentTest.tour}</h4>
+                                        <div className="absolute bottom-6 left-6 right-6 text-white">
+                                            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                                                <h4 className="text-xl font-bold mb-2">{currentTest.tour}</h4>
                                                 <div className="flex items-center justify-between text-sm opacity-90">
                           <span className="flex items-center space-x-2">
                             <i className="bi bi-calendar3"></i>
@@ -200,44 +286,44 @@ const TestimonialsSection: React.FC = () => {
                                 </div>
 
                                 {/* Right Side - Testimonial Content */}
-                                <div className="lg:col-span-7 flex flex-col justify-center order-1 lg:order-2">
-                                    <div className="testimonial-card bg-white rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl p-8 sm:p-10 lg:p-12 relative overflow-hidden border border-gray-100">
-                                        {/* Decorative Elements - Smaller on mobile */}
-                                        <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-bl from-teal-100/50 to-blue-100/50 rounded-full -translate-y-12 sm:-translate-y-16 translate-x-12 sm:translate-x-16"></div>
-                                        <div className="absolute bottom-0 left-0 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-tr from-purple-100/50 to-pink-100/50 rounded-full translate-y-10 sm:translate-y-12 -translate-x-10 sm:-translate-x-12"></div>
+                                <div className="lg:col-span-7 flex flex-col justify-center">
+                                    <div className="testimonial-card bg-white rounded-3xl shadow-2xl p-12 relative overflow-hidden border border-gray-100">
+                                        {/* Decorative Elements */}
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-teal-100/50 to-blue-100/50 rounded-full -translate-y-16 translate-x-16"></div>
+                                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-100/50 to-pink-100/50 rounded-full translate-y-12 -translate-x-12"></div>
 
                                         <div className="relative z-10">
                                             {/* Quote Icon */}
-                                            <div className="mb-6 sm:mb-8">
-                                                <div className="w-16 h-16 sm:w-18 sm:h-18 bg-gradient-to-r from-teal-500 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg transform -rotate-3 hover:rotate-0 transition-transform duration-300">
-                                                    <i className="bi bi-quote text-white text-2xl sm:text-3xl"></i>
+                                            <div className="mb-8">
+                                                <div className="w-18 h-18 bg-gradient-to-r from-teal-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+                                                    <i className="bi bi-quote text-white text-3xl"></i>
                                                 </div>
                                             </div>
 
                                             {/* Rating Stars */}
                                             <div className="flex items-center space-x-1 mb-6">
                                                 {renderStars(currentTest.rating)}
-                                                <span className="ml-3 text-lg sm:text-xl font-bold text-gray-700">{currentTest.rating}.0</span>
+                                                <span className="ml-3 text-xl font-bold text-gray-700">{currentTest.rating}.0</span>
                                             </div>
 
                                             {/* Testimonial Text */}
-                                            <blockquote className="text-lg sm:text-xl lg:text-2xl text-gray-700 leading-relaxed mb-8 font-medium">
+                                            <blockquote className="text-2xl text-gray-700 leading-relaxed mb-8 font-medium">
                                                 "{currentTest.text}"
                                             </blockquote>
 
                                             {/* Customer Profile */}
                                             <div className="flex items-center space-x-4 pt-6 border-t border-gray-200">
                                                 {/* Avatar */}
-                                                <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0">
+                                                <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0">
                                                     {currentTest.avatar}
                                                 </div>
 
                                                 {/* Customer Info */}
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 truncate">{currentTest.name}</h4>
+                                                    <h4 className="text-xl font-bold text-gray-900 mb-1">{currentTest.name}</h4>
                                                     <p className="text-base text-gray-600 flex items-center space-x-2">
                                                         <i className="bi bi-geo-alt text-teal-500 flex-shrink-0"></i>
-                                                        <span className="truncate">{currentTest.location}</span>
+                                                        <span>{currentTest.location}</span>
                                                     </p>
                                                 </div>
 
@@ -254,8 +340,17 @@ const TestimonialsSection: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Enhanced Navigation - Mobile Optimized */}
+                {/* Enhanced Navigation - Mobile Optimized with Swipe Indicator */}
                 <div className="flex flex-col sm:flex-row items-center justify-center space-y-6 sm:space-y-0 sm:space-x-8 mb-10 sm:mb-12 lg:mb-16">
+                    {/* Mobile Swipe Indicator */}
+                    <div className="block lg:hidden mb-4 sm:mb-0">
+                        <div className="flex items-center justify-center space-x-2 text-gray-500 text-sm">
+                            <i className="bi bi-arrow-left"></i>
+                            <span>Swipe or tap to navigate</span>
+                            <i className="bi bi-arrow-right"></i>
+                        </div>
+                    </div>
+
                     {/* Navigation Dots */}
                     <div className="flex items-center space-x-3">
                         {testimonials.map((_, index) => (
