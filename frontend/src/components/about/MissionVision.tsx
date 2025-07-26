@@ -109,7 +109,7 @@ const MissionVision: React.FC = () => {
                   description: "Your safety and security are our top priorities in every aspect of your journey",
                 },
                 {
-                  icon: "bi bi-leaf",
+                  icon: "bi bi-tree",
                   title: "Sustainable Tourism",
                   description:
                     "We practice responsible tourism that protects the environment and supports local communities",
