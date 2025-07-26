@@ -5,10 +5,10 @@ import teamImage from "../../assets/img/about-business.jpg"
 const WhyChooseUs: React.FC = () => {
   const reasons = [
     {
-      icon: "bi bi-award",
-      title: "Award-Winning Service",
-      description: "Recognized for excellence in customer service and travel experiences",
-      stats: "4.9/5 Rating",
+      icon: "bi bi-geo-alt",
+      title: "Comprehensive Coverage",
+      description: "From ancient cities to pristine beaches - we cover all of Sri Lanka's highlights",
+      stats: "30+ Destinations",
     },
     {
       icon: "bi bi-people",
@@ -70,11 +70,11 @@ const WhyChooseUs: React.FC = () => {
                 </div>
 
                 {/* Floating badge */}
-                <div className="absolute -top-6 -right-6 bg-gradient-to-r from-green-500 to-teal-600 text-white p-6 rounded-3xl shadow-2xl z-10">
+                <div className="absolute -top-6 -right-6 bg-gradient-to-r from-orange-500 to-red-600 text-white p-6 rounded-3xl shadow-2xl z-10">
                   <div className="text-center">
-                    <i className="bi bi-trophy-fill text-2xl mb-2 block" />
-                    <div className="text-sm font-bold">Best Service</div>
-                    <div className="text-xs">Award 2023</div>
+                    <i className="bi bi-calendar-event text-2xl mb-2 block" />
+                    <div className="text-sm font-bold">Since 2013</div>
+                    <div className="text-xs">Trusted Service</div>
                   </div>
                 </div>
               </div>
