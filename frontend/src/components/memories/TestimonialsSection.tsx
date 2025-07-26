@@ -121,6 +121,18 @@ const TestimonialsSection: React.FC = () => {
 
   const currentTestimonial = testimonials[activeTestimonial]
 
+  // Map tour packages to their corresponding images
+  const getImageForTour = (tourPackage: string) => {
+    const imageMap: { [key: string]: string } = {
+      "Historic Galle Fort & Southern Beaches": "/src/assets/img/card-Galle.jpg",
+      "Yala National Park Safari": "/src/assets/img/card-Yala.jpg",
+      "Ella Hill Country Adventure": "/src/assets/img/card-Ella.jpg",
+      "Cultural Kandy Experience": "/src/assets/img/card-Kandy.jpg",
+      "Sigiriya Rock Fortress": "/src/assets/img/card-Sigiriya.jpg"
+    }
+    return imageMap[tourPackage] || "/src/assets/img/card-Sigiriya.jpg"
+  }
+
   return (
     <section className="relative py-16 sm:py-20 lg:py-28 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden">
       {/* Animated Background Elements */}
@@ -227,8 +239,8 @@ const TestimonialsSection: React.FC = () => {
                   {/* Main Image */}
                   <div className="relative h-80 lg:h-96 rounded-3xl overflow-hidden shadow-2xl group">
                     <img
-                      src="/src/assets/img/card-Sigiriya.jpg"
-                      alt="Sri Lanka Tour Experience"
+                      src={getImageForTour(currentTestimonial.tourPackage)}
+                      alt={`${currentTestimonial.tourPackage} - Sri Lanka Tour Experience`}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
