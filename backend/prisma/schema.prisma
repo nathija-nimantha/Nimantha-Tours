@@ -8,33 +8,30 @@ datasource db {
 }
 
 model Tour {
-  id          Int        @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   title       String
-  slug        String     @unique
+  slug        String      @unique
   description String
   shortDesc   String?
+  maxPeople   Int
+  difficulty  Difficulty  @default(EASY)
+  category    String
+  featured    Boolean     @default(false)
+  images      String[]
+  image       String?
+  location    String
+  coordinates Json?
+  startDates  DateTime[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   price       Int
   duration    Int
-  maxPeople   Int?       // Made optional
-  difficulty  String     // Changed to String for flexibility ("Easy", "Moderate", etc.)
-  category    String
-  featured    Boolean    @default(false)
-  images      String[]   // Array of image URLs
-  image       String?    // Single main image path
-  location    String
-  coordinates Json?      // {lat, lng}
-  startDates  DateTime[]
-  highlights  String[]   // Array of highlights
-  rating      Float?     // Added rating field (can be calculated from reviews too)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  // Relations
-  itinerary  Itinerary[]
-  reviews    Review[]
-  inclusions Inclusion[]
-  exclusions Exclusion[]
-  bookings   Booking[]
+  rating      Float?
+  bookings    Booking[]
+  exclusions  Exclusion[]
+  inclusions  Inclusion[]
+  itinerary   Itinerary[]
+  reviews     Review[]
 
   @@map("tours")
 }
@@ -46,11 +43,9 @@ model Itinerary {
   title         String
   description   String
   activities    String[]
-  meals         String[] // breakfast, lunch, dinner
+  meals         String[]
   accommodation String?
-
-  // Relations
-  tour Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tour          Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
   @@map("itineraries")
 }
@@ -59,9 +54,7 @@ model Inclusion {
   id     Int    @id @default(autoincrement())
   tourId Int
   item   String
-
-  // Relations
-  tour Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tour   Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
   @@map("inclusions")
 }
@@ -70,44 +63,34 @@ model Exclusion {
   id     Int    @id @default(autoincrement())
   tourId Int
   item   String
-
-  // Relations
-  tour Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tour   Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
 
   @@map("exclusions")
 }
 
 model Booking {
-  id        Int    @id @default(autoincrement())
-  bookingId String @unique // Custom booking ID like BK0001
-
-  // Customer details
-  title       String // Mr, Mrs, Ms, Dr, etc.
-  name        String
-  nationality String
-  email       String
-  phone       String
-
-  startDate DateTime
-  nights    Int
-  adults    Int
-  children  Int
-
+  id            Int           @id @default(autoincrement())
+  bookingId     String        @unique
+  title         String
+  name          String
+  nationality   String
+  email         String
+  phone         String
+  startDate     DateTime
+  nights        Int
+  adults        Int
+  children      Int
   accommodation String
   specialNote   String?
   hearAboutUs   String?
   otherDetails  String?
-
-  // System fields
-  totalPrice Float         @default(0)
-  status     BookingStatus @default(PENDING)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-
-  // Relations
-  payment Payment?
-  tour    Tour?    @relation(fields: [tourId], references: [id])
-  tourId  Int?
+  totalPrice    Float         @default(0)
+  status        BookingStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  tourId        Int?
+  tour          Tour?         @relation(fields: [tourId], references: [id])
+  payment       Payment?
 
   @@map("bookings")
 }
@@ -121,30 +104,24 @@ model Payment {
   reference String?
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-
-  // Relations
-  booking Booking @relation(fields: [bookingId], references: [id])
+  booking   Booking       @relation(fields: [bookingId], references: [id])
 
   @@map("payments")
 }
 
 model Review {
-  id     Int @id @default(autoincrement())
-  tourId Int
-
-  // Reviewer details
+  id        Int      @id @default(autoincrement())
+  tourId    Int
   name      String
   email     String
-  rating    Int // 1-5 stars
+  rating    Int
   title     String?
   comment   String
   images    String[]
   verified  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Relations
-  tour Tour @relation(fields: [tourId], references: [id])
+  tour      Tour     @relation(fields: [tourId], references: [id])
 
   @@map("reviews")
 }
@@ -196,7 +173,6 @@ model Newsletter {
   @@map("newsletter_subscribers")
 }
 
-// Enums
 enum BookingStatus {
   PENDING
   CONFIRMED
@@ -216,4 +192,11 @@ enum InquiryStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+}
+
+enum Difficulty {
+  EASY
+  MODERATE
+  CHALLENGING
+  EXTREME
 }
