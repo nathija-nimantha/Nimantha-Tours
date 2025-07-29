@@ -107,7 +107,7 @@ async function main() {
                 image: '/src/assets/img/card-CulturalTriangle.jpg',
                 location: 'Central Province',
                 coordinates: { lat: 7.9570, lng: 80.7603 },
-                highlights: ['Sigiriya Rock Fortress', 'Polonnaruwa Ancient City', 'Dambulla Cave Temple'],
+                // highlights: ['Sigiriya Rock Fortress', 'Polonnaruwa Ancient City', 'Dambulla Cave Temple'],
                 rating: 4.8,
                 startDates: [
                     new Date('2025-08-01'),
@@ -137,7 +137,7 @@ async function main() {
                 image: '/src/assets/img/card-NuwaraEliya.jpg',
                 location: 'Central Province',
                 coordinates: { lat: 6.9497, lng: 80.7891 },
-                highlights: ['Tea Plantations', 'Gregory Lake', 'Strawberry Fields'],
+                // highlights: ['Tea Plantations', 'Gregory Lake', 'Strawberry Fields'],
                 rating: 4.5,
                 startDates: [
                     new Date('2025-07-20'),
@@ -166,7 +166,7 @@ async function main() {
                 image: '/src/assets/img/card-TrainJourney.jpg',
                 location: 'Kandy to Ella',
                 coordinates: { lat: 7.2906, lng: 80.6337 },
-                highlights: ['Scenic Train Ride', 'Nine Arch Bridge', 'Tea Country Views'],
+                // highlights: ['Scenic Train Ride', 'Nine Arch Bridge', 'Tea Country Views'],
                 rating: 4.7,
                 startDates: [
                     new Date('2025-07-20'),
@@ -194,7 +194,7 @@ async function main() {
                 image: '/src/assets/img/card-YalaSafari.jpg',
                 location: 'Southern Province',
                 coordinates: { lat: 6.3725, lng: 81.5185 },
-                highlights: ['Leopard Spotting', 'Elephant Herds', 'Bird Watching'],
+                // highlights: ['Leopard Spotting', 'Elephant Herds', 'Bird Watching'],
                 rating: 4.6,
                 startDates: [
                     new Date('2025-07-25'),
@@ -222,7 +222,7 @@ async function main() {
                 image: '/src/assets/img/card-AdamsPeak.jpg',
                 location: 'Ratnapura District',
                 coordinates: { lat: 6.8092, lng: 80.4989 },
-                highlights: ['Sacred Summit', 'Sunrise Views', 'Pilgrimage Trail'],
+                // highlights: ['Sacred Summit', 'Sunrise Views', 'Pilgrimage Trail'],
                 rating: 4.9,
                 startDates: [
                     new Date('2025-08-03'),
